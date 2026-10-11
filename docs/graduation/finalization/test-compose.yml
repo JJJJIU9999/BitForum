@@ -1,0 +1,35 @@
+services:
+  mysql:
+    image: mysql:8.0.46
+    environment:
+      MYSQL_ROOT_PASSWORD: ${FINALIZATION_DB_PASSWORD:?dedicated test password required}
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: bitforum_finalization_test
+    ports: ["127.0.0.1:23306:3306"]
+    volumes: ["finalization-mysql:/var/lib/mysql"]
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=\"$${MYSQL_ROOT_PASSWORD}\" mysql --protocol=TCP -h127.0.0.1 -uroot -e 'SELECT 1'"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  redis:
+    image: redis/redis-stack-server:7.4.0-v8
+    ports: ["127.0.0.1:26379:6379"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+  rabbitmq:
+    image: rabbitmq:3-management
+    environment:
+      RABBITMQ_DEFAULT_USER: finalization_test
+      RABBITMQ_DEFAULT_PASS: ${FINALIZATION_MQ_PASSWORD:?dedicated test password required}
+    ports: ["127.0.0.1:25672:5672"]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 3s
+      timeout: 5s
+      retries: 30
+volumes:
+  finalization-mysql:

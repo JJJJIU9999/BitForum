@@ -1,0 +1,383 @@
+/* ==================== AI 助手浮动面板（M13） ====================
+   使用 variables.css 中定义的配色变量，保持与站点整体视觉一致。
+   面板固定在右下角；移动端占满宽度并抬高底部，避开移动端导航栏。 */
+
+.ai-fab {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  color: var(--paper);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  border: 0;
+  border-radius: 999px;
+  background: var(--forest);
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  transition: background .18s ease, transform .18s ease;
+}
+
+.ai-fab:hover {
+  background: var(--forest-hover);
+  transform: translateY(-1px);
+}
+
+.ai-panel {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 40;
+  display: flex;
+  width: 560px;
+  max-width: calc(100vw - 32px);
+  /* 用 min() 保证小屏笔记本上不超出视口，避免面板底部被裁掉 */
+  height: min(640px, calc(100vh - 140px));
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--paper);
+  box-shadow: var(--shadow-lg);
+}
+
+.ai-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  color: var(--paper);
+  background: var(--forest);
+}
+
+.ai-panel-header strong {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+}
+
+.ai-panel-header-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.ai-panel-header-actions button {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  color: var(--paper);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  cursor: pointer;
+}
+
+.ai-panel-header-actions button:hover {
+  background: rgba(255, 255, 255, .16);
+}
+
+.ai-conversation-list {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  overflow-x: auto;
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-soft);
+}
+
+.ai-conversation-list button {
+  flex: 0 0 auto;
+  max-width: 150px;
+  overflow: hidden;
+  padding: 5px 10px;
+  color: var(--ink-soft);
+  font-size: 12px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.ai-conversation-list button.is-active {
+  color: var(--paper);
+  border-color: var(--forest);
+  background: var(--forest);
+}
+
+.ai-panel-body {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  background: var(--paper);
+}
+
+.ai-empty {
+  padding: 18px 6px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  line-height: var(--line-height-base);
+}
+
+.ai-empty-hint {
+  margin-top: 6px;
+  color: var(--ink-faint);
+  font-size: 12px;
+}
+
+.ai-message {
+  max-width: 86%;
+  margin-bottom: 10px;
+  padding: 9px 12px;
+  font-size: 13px;
+  line-height: var(--line-height-base);
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-radius: var(--radius-sm);
+}
+
+.ai-message-user {
+  margin-left: auto;
+  color: var(--paper);
+  background: var(--forest);
+}
+
+.ai-message-assistant {
+  color: var(--ink);
+  border: 1px solid var(--line);
+  background: var(--paper-soft);
+}
+
+/* M15：回答下方的引用来源，可点击跳转到原帖 */
+.ai-citations {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px dashed var(--line);
+  font-size: 12px;
+  /* 覆盖 .ai-message 的 pre-wrap，引用列表需要正常换行排版 */
+  white-space: normal;
+}
+
+.ai-citations-label {
+  color: var(--ink-faint);
+  font-weight: 700;
+}
+
+.ai-citations ul {
+  margin: 4px 0 0;
+  padding-left: 16px;
+}
+
+.ai-citations li + li {
+  margin-top: 2px;
+}
+
+.ai-citation-link {
+  color: var(--forest);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ai-typing {
+  color: var(--ink-faint);
+  font-style: italic;
+}
+
+/* ==================== 助手回答的 Markdown 渲染 ====================
+   模型会输出表格、列表、加粗等语法；不渲染时会显示成带 | 和 ** 的源码。
+   聊天气泡只有 400px 宽，所以表格用容器横向滚动而不是压缩字距。 */
+
+.md-content {
+  /* 容器宽度固定，内部用 border-box，避免表格与代码块的 padding 撑出气泡 */
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+}
+
+.md-content > *:first-child {
+  margin-top: 0;
+}
+
+.md-content > *:last-child {
+  margin-bottom: 0;
+}
+
+.md-content p {
+  margin: 0 0 8px;
+}
+
+.md-content h3,
+.md-content h4,
+.md-content h5,
+.md-content h6 {
+  margin: 12px 0 6px;
+  color: var(--forest);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.md-content strong {
+  color: var(--forest);
+  font-weight: 800;
+}
+
+.md-content ul,
+.md-content ol {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+
+.md-content li {
+  margin-bottom: 3px;
+}
+
+.md-content code {
+  padding: 1px 5px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 12px;
+  border-radius: 4px;
+  background: #e8efe9;
+}
+
+.md-content pre {
+  max-width: 100%;
+  margin: 0 0 8px;
+  padding: 10px 12px;
+  overflow-x: auto;
+  border-radius: var(--radius-sm);
+  background: #1f2a24;
+}
+
+.md-content pre code {
+  padding: 0;
+  color: #e6efe8;
+  background: transparent;
+}
+
+.md-table-wrap {
+  max-width: 100%;
+  margin: 0 0 8px;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+}
+
+.md-content table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.md-content th,
+.md-content td {
+  padding: 6px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+}
+
+.md-content th {
+  color: var(--forest);
+  font-weight: 800;
+  background: var(--forest-soft);
+}
+
+.md-content tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.md-content blockquote {
+  margin: 0 0 8px;
+  padding: 6px 10px;
+  color: var(--ink-soft);
+  border-left: 3px solid var(--line-strong);
+  background: rgba(0, 0, 0, .02);
+}
+
+.md-content hr {
+  margin: 10px 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+}
+
+.md-content a {
+  color: var(--terracotta);
+  text-decoration: underline;
+}
+
+.ai-error {
+  margin-top: 8px;
+  padding: 8px 10px;
+  color: var(--terracotta);
+  font-size: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--terracotta-soft);
+}
+
+.ai-panel-footer {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  border-top: 1px solid var(--line);
+  background: var(--paper-soft);
+}
+
+.ai-panel-footer input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+}
+
+.ai-panel-footer input:focus {
+  outline: 2px solid var(--forest-soft);
+  border-color: var(--forest);
+}
+
+.ai-panel-footer button {
+  display: grid;
+  width: 38px;
+  place-items: center;
+  color: var(--paper);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--forest);
+  cursor: pointer;
+}
+
+.ai-panel-footer button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+/* 窄屏：面板铺满可用宽度，并避开底部导航栏 */
+@media (max-width: 720px) {
+  .ai-panel {
+    right: 8px;
+    bottom: 72px;
+    left: 8px;
+    width: auto;
+    height: min(460px, calc(100vh - 160px));
+  }
+
+  .ai-fab {
+    right: 14px;
+    bottom: 74px;
+    padding: 11px 14px;
+  }
+
+  .ai-fab span {
+    display: none;
+  }
+}

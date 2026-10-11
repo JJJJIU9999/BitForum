@@ -1,0 +1,402 @@
+[
+  {
+    "id": "dev-021",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常技术问答",
+    "content": "MySQL 的 RR 隔离级别下间隙锁是怎么加的？为什么范围查询容易死锁？"
+  },
+  {
+    "id": "dev-022",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常技术讨论",
+    "content": "补充一点：如果用的是 MySQL 8.0，可以直接看 performance_schema 里的锁等待信息，比猜快。"
+  },
+  {
+    "id": "dev-023",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常经验分享",
+    "content": "记录一次排查接口超时的过程：最后定位到是某个三方 SDK 默认没有设置连接超时，改成 2 秒后恢复。"
+  },
+  {
+    "id": "dev-024",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-2 对方案的尖锐批评，指向观点",
+    "content": "这个设计的扩展性有问题，把审核逻辑写死在 Service 里，以后加一种内容类型就要改一遍。"
+  },
+  {
+    "id": "dev-025",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-3 单个短互动",
+    "content": "学到了，感谢分享！"
+  },
+  {
+    "id": "dev-026",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-3 单个短互动",
+    "content": "顶一下，希望更多人看到。"
+  },
+  {
+    "id": "dev-027",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-5 自荐开源项目，无联系方式与利益诱饵",
+    "content": "写了一个轻量的限流组件，基于令牌桶实现，源码在 GitHub 上，欢迎 review 指正。"
+  },
+  {
+    "id": "dev-028",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常提问",
+    "content": "请问这个方案在容器环境下需要注意什么吗？我们用的是 K8s，担心探针会影响启动。"
+  },
+  {
+    "id": "dev-029",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常技术复盘",
+    "content": "把上次压测的结论整理成了表格：QPS 从 800 提到 2400，主要收益来自索引优化和连接池调参。"
+  },
+  {
+    "id": "dev-030",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-4 日常闲聊，不违规",
+    "content": "周末还在写代码的都是真爱，我也在加班哈哈。"
+  },
+  {
+    "id": "dev-031",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-2 否定结论但有理有据",
+    "content": "结论我不认同，你的测试没控制变量，缓存命中率的影响被混在一起了。"
+  },
+  {
+    "id": "dev-032",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常教程",
+    "content": "从零实现一个简易 RPC 框架（一）：协议设计与序列化选型的取舍。"
+  },
+  {
+    "id": "dev-033",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常纠错",
+    "content": "文中第三段有个笔误，应该是 @Transactional 而不是 @Transaction。"
+  },
+  {
+    "id": "dev-034",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常求职经验分享",
+    "content": "校招后端面试的几点体会：项目要能讲清取舍，八股要背但要理解，算法别只刷模板题。"
+  },
+  {
+    "id": "dev-035",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-3 单个短互动",
+    "content": "收藏了，慢慢看。"
+  },
+  {
+    "id": "dev-036",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常提问",
+    "content": "RabbitMQ 消费端手动 ACK 时，如果业务处理成功但 ACK 失败会怎样？需要做幂等吗？"
+  },
+  {
+    "id": "dev-037",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-5 推荐他人文章，无利益关联",
+    "content": "推荐一篇讲得比较透的文章，搜「一致性哈希 原理」应该能找到，比很多博客清楚。"
+  },
+  {
+    "id": "dev-038",
+    "targetType": "ARTICLE",
+    "category": "promotion",
+    "label": "REJECT",
+    "labelReason": "§2.3 P-1 含 QQ 联系方式的营销导流",
+    "content": "专业代做毕业设计，Java/Python 都能接，加 QQ 88888888 详谈，价格可议。"
+  },
+  {
+    "id": "dev-039",
+    "targetType": "COMMENT",
+    "category": "promotion",
+    "label": "REJECT",
+    "labelReason": "§2.3 P-2 利益诱饵（免费领 + 限时）",
+    "content": "限时免费领取大厂面试真题合集，评论区留下邮箱我统一发。"
+  },
+  {
+    "id": "dev-040",
+    "targetType": "ARTICLE",
+    "category": "promotion",
+    "label": "REJECT",
+    "labelReason": "§2.3 P-1 P-2 联系方式 + 返利诱饵",
+    "content": "注册即送 88 元现金，邀请好友再返 30，扫码进群或加我微信了解详情。"
+  },
+  {
+    "id": "dev-041",
+    "targetType": "COMMENT",
+    "category": "promotion",
+    "label": "REJECT",
+    "labelReason": "§2.3 P-1 含手机号导流",
+    "content": "有需要定制开发的可以联系我，电话 13900001111，长期接单。"
+  },
+  {
+    "id": "dev-042",
+    "targetType": "COMMENT",
+    "category": "promotion",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-1 模糊引流，无联系方式与链接",
+    "content": "这套方案我整理成文档了，需要的可以私信我，或者去我的主页看看。"
+  },
+  {
+    "id": "dev-043",
+    "targetType": "ARTICLE",
+    "category": "promotion",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-2 含站外链接，内容有技术价值需人工判断",
+    "content": "我把源码和压测脚本都放在自己的站点上了，链接：mysite.example.com/ratelimit，欢迎自取。"
+  },
+  {
+    "id": "dev-044",
+    "targetType": "COMMENT",
+    "category": "promotion",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-2 提及具体商业产品，可能是正常使用经验也可能是软广",
+    "content": "我们线上用的是某商业 APM 产品，接入很简单，就是价格有点贵，小团队慎选。"
+  },
+  {
+    "id": "dev-045",
+    "targetType": "ARTICLE",
+    "category": "promotion",
+    "label": "PASS",
+    "labelReason": "§2.4 N-5 推荐开源项目，无联系方式与利益诱饵",
+    "content": "受这个思路启发，我照着写了一个简化版并开源了，地址在文末，欢迎提意见。"
+  },
+  {
+    "id": "dev-046",
+    "targetType": "COMMENT",
+    "category": "promotion",
+    "label": "PASS",
+    "labelReason": "§2.4 N-5 单纯推荐工具，无导流意图",
+    "content": "可以试试 Arthas，排查线上问题挺好用的，官方文档写得很详细。"
+  },
+  {
+    "id": "dev-047",
+    "targetType": "ARTICLE",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-1 索取账号密码",
+    "content": "账号异常需要验证，请回复你的账号和密码，我们会帮你恢复权限。"
+  },
+  {
+    "id": "dev-048",
+    "targetType": "COMMENT",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-2 假冒官方活动",
+    "content": "本站周年庆，前 100 名回帖用户可领取 500 元京东卡，添加活动客服登记即可。"
+  },
+  {
+    "id": "dev-049",
+    "targetType": "ARTICLE",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-3 收益承诺",
+    "content": "闲置资金别放银行了，跟我做量化，月收益稳定 15%，亏损包赔。"
+  },
+  {
+    "id": "dev-050",
+    "targetType": "COMMENT",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-1 索取验证码",
+    "content": "我是官方客服，请把收到的短信验证码发给我，用于解除账号限制。"
+  },
+  {
+    "id": "dev-051",
+    "targetType": "ARTICLE",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-3 虚拟货币投资诱导",
+    "content": "独家内幕消息，某币三天内必涨，现在入场还来得及，错过再等一年。"
+  },
+  {
+    "id": "dev-052",
+    "targetType": "COMMENT",
+    "category": "fraud",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-4 疑似推广但缺少明确诈骗特征",
+    "content": "有个渠道能低价买到正版授权，比官网便宜一半，有需要的可以问我要联系方式。"
+  },
+  {
+    "id": "dev-053",
+    "targetType": "ARTICLE",
+    "category": "harmful",
+    "label": "REJECT",
+    "labelReason": "§2.3 H-1 人身攻击",
+    "content": "写这种文章的人根本不懂技术，纯粹是来误导新人的，建议版主直接封号。"
+  },
+  {
+    "id": "dev-054",
+    "targetType": "COMMENT",
+    "category": "harmful",
+    "label": "REJECT",
+    "labelReason": "§2.3 H-1 侮辱性称呼",
+    "content": "楼上这位是真菜，连基本概念都搞不清楚还在这教别人。"
+  },
+  {
+    "id": "dev-055",
+    "targetType": "COMMENT",
+    "category": "harmful",
+    "label": "REJECT",
+    "labelReason": "§2.3 H-2 职业歧视",
+    "content": "培训班出来的就是这样，基础差还喜欢抬杠，别在这丢人了。"
+  },
+  {
+    "id": "dev-056",
+    "targetType": "ARTICLE",
+    "category": "harmful",
+    "label": "REJECT",
+    "labelReason": "§2.3 H-2 性别歧视",
+    "content": "女生就别学后端了，逻辑思维跟不上，做点测试或者前端更合适。"
+  },
+  {
+    "id": "dev-057",
+    "targetType": "COMMENT",
+    "category": "harmful",
+    "label": "REJECT",
+    "labelReason": "§2.3 H-3 暴力威胁",
+    "content": "再敢在这发广告，我顺着网线过去找你，信不信。"
+  },
+  {
+    "id": "dev-058",
+    "targetType": "COMMENT",
+    "category": "harmful",
+    "label": "PASS",
+    "labelReason": "§2.4 N-2 激烈但针对观点，不构成人身攻击",
+    "content": "这个结论完全站不住脚，你的推理前提就是错的，建议先补一下操作系统基础。"
+  },
+  {
+    "id": "dev-059",
+    "targetType": "ARTICLE",
+    "category": "spam",
+    "label": "REJECT",
+    "labelReason": "§2.3 S-1 同一内容重复 5 次（≥ 3）",
+    "content": "互赞互赞互赞互赞互赞"
+  },
+  {
+    "id": "dev-060",
+    "targetType": "COMMENT",
+    "category": "spam",
+    "label": "REJECT",
+    "labelReason": "§2.3 S-1 连续重复字符超过 8 个",
+    "content": "哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈哈"
+  },
+  {
+    "id": "dev-061",
+    "targetType": "COMMENT",
+    "category": "spam",
+    "label": "REJECT",
+    "labelReason": "§2.3 S-2 纯乱码",
+    "content": "qweoiru zxcv,mn 1234 ......////"
+  },
+  {
+    "id": "dev-062",
+    "targetType": "COMMENT",
+    "category": "spam",
+    "label": "PASS",
+    "labelReason": "§2.4 N-3 单个短互动，未达重复阈值",
+    "content": "感谢楼主整理，帮大忙了。"
+  },
+  {
+    "id": "dev-063",
+    "targetType": "COMMENT",
+    "category": "spam",
+    "label": "PASS",
+    "labelReason": "§2.4 N-4 无关闲聊但不违规",
+    "content": "话说这个板块的图标挺好看的。"
+  },
+  {
+    "id": "dev-064",
+    "targetType": "COMMENT",
+    "category": "sensitive",
+    "label": "REJECT",
+    "labelReason": "§2.3 X-1 泄露他人工作单位与住址",
+    "content": "他在某某公司上班，住在城东某某小区，你们可以直接去找他。"
+  },
+  {
+    "id": "dev-065",
+    "targetType": "ARTICLE",
+    "category": "sensitive",
+    "label": "REJECT",
+    "labelReason": "§2.3 X-2 寻求刷单等违法操作",
+    "content": "求带刷单的渠道，想做点副业，需要那种不用自己垫资的平台。"
+  },
+  {
+    "id": "dev-066",
+    "targetType": "COMMENT",
+    "category": "sensitive",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-3 影射式表达，未展开",
+    "content": "这里面的事不能细说，说多了帖子就没了，大家心里有数就行。"
+  },
+  {
+    "id": "dev-067",
+    "targetType": "ARTICLE",
+    "category": "sensitive",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正当的技术合规讨论",
+    "content": "请教下数据合规问题：日志里记录用户 IP 需要脱敏吗？有没有相关的行业规范可以参考？"
+  },
+  {
+    "id": "dev-068",
+    "targetType": "COMMENT",
+    "category": "sensitive",
+    "label": "REJECT",
+    "labelReason": "§2.3 X-1 泄露手机号",
+    "content": "这个人的联系方式我发一下：13812345678，有问题直接找他。"
+  },
+  {
+    "id": "dev-069",
+    "targetType": "ARTICLE",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-2 假冒官方客服实施退款诈骗",
+    "content": "接到用户反馈订单异常，现统一办理退款，请添加退款专员微信并提供银行卡号。"
+  },
+  {
+    "id": "dev-070",
+    "targetType": "COMMENT",
+    "category": "harmful",
+    "label": "REJECT",
+    "labelReason": "§2.3 H-2 身份歧视（学历）",
+    "content": "大专生就别碰分布式了，先把基础补上再说，不然写出来的东西没法看。"
+  }
+]

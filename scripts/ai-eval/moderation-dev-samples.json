@@ -1,0 +1,162 @@
+[
+  {
+    "id": "dev-001",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常技术分享",
+    "content": "排查 Spring Boot 自动配置冲突时，可以先打开 ConditionEvaluationReport 看每个条件注解的匹配结果，比逐个试依赖快得多。"
+  },
+  {
+    "id": "dev-002",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常技术评论",
+    "content": "这个方案我试过，建议把定时补偿任务加上，否则 Redis 和 MySQL 不一致时只能手工修数据。"
+  },
+  {
+    "id": "dev-003",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常求助提问",
+    "content": "求助：服务跑一段时间就 OOM，堆转储看是有大量 Session 对象没释放，应该从哪些方向排查？"
+  },
+  {
+    "id": "dev-004",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常经验复盘",
+    "content": "分享一次线上事故复盘：热点文章被反复查询导致数据库压力飙升，最后用本地缓存加随机过期时间解决。"
+  },
+  {
+    "id": "dev-005",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-2 观点性负面评价（指向方案而非人）",
+    "content": "这个方案我不太认可，压测数据看着好看，但没考虑冷启动场景，实际上线可能会出问题。"
+  },
+  {
+    "id": "dev-006",
+    "targetType": "ARTICLE",
+    "category": "promotion",
+    "label": "REJECT",
+    "labelReason": "§2.3 P-1 含微信号 + P-2 利益诱饵（内推名额）",
+    "content": "全网最低价！加微信 abc123 领取 Java 全套课程，前 50 名还送大厂内推名额，速度联系！"
+  },
+  {
+    "id": "dev-007",
+    "targetType": "COMMENT",
+    "category": "promotion",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-1 语义模糊的引流：暗示主页有资料，但无链接、无联系方式、无利益诱饵",
+    "content": "这种问题我一般用某工具一键解决，具体配置放在我主页的置顶帖了，感兴趣可以看看。"
+  },
+  {
+    "id": "dev-008",
+    "targetType": "COMMENT",
+    "category": "promotion",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-2 含站外链接但内容有技术价值，是否属营销需人工判断",
+    "content": "完整教程我写在博客里了，链接是 example.com/spring-cache，里面有可运行的示例代码。"
+  },
+  {
+    "id": "dev-009",
+    "targetType": "ARTICLE",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-1 索取身份证与银行卡信息",
+    "content": "点击链接填写身份证和银行卡信息，即可领取国家专项创业补贴 5000 元，名额有限先到先得。"
+  },
+  {
+    "id": "dev-010",
+    "targetType": "COMMENT",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-2 虚假中奖",
+    "content": "恭喜您在本站活动中抽中一等奖，请添加客服 QQ 提供验证码领取奖品。"
+  },
+  {
+    "id": "dev-011",
+    "targetType": "ARTICLE",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-3 收益承诺（稳赚 30%）",
+    "content": "跟着我操作三天稳赚 30%，本金随时可取，内部渠道名额有限，先到先得。"
+  },
+  {
+    "id": "dev-012",
+    "targetType": "COMMENT",
+    "category": "harmful",
+    "label": "REJECT",
+    "labelReason": "§2.3 H-1 人身攻击与侮辱（指向人）",
+    "content": "楼主就是个傻子吧，写的什么垃圾东西，建议趁早别在这丢人现眼。"
+  },
+  {
+    "id": "dev-013",
+    "targetType": "COMMENT",
+    "category": "harmful",
+    "label": "REJECT",
+    "labelReason": "§2.3 H-2 地域歧视",
+    "content": "这种东西也就某些地方的人写得出来，那边的人素质就这样，懂的都懂。"
+  },
+  {
+    "id": "dev-014",
+    "targetType": "COMMENT",
+    "category": "spam",
+    "label": "REJECT",
+    "labelReason": "§2.3 S-1 连续重复字符「顶」共 20 个（≥ 8）",
+    "content": "顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶顶"
+  },
+  {
+    "id": "dev-015",
+    "targetType": "COMMENT",
+    "category": "spam",
+    "label": "REJECT",
+    "labelReason": "§2.3 S-2 纯乱码，无可读语义",
+    "content": "asdfghjkl;qwertyuiop"
+  },
+  {
+    "id": "dev-016",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-4 与主题无关但不违规的日常闲聊",
+    "content": "今天天气真不错，适合在家写代码。"
+  },
+  {
+    "id": "dev-017",
+    "targetType": "COMMENT",
+    "category": "sensitive",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-3 影射式表达，未展开、无明确违规内容",
+    "content": "这个话题的水太深了，公开场合不方便展开，懂的自然懂。"
+  },
+  {
+    "id": "dev-018",
+    "targetType": "COMMENT",
+    "category": "sensitive",
+    "label": "REJECT",
+    "labelReason": "§2.3 X-1 泄露他人隐私（手机号与住址）",
+    "content": "他的手机号是 13800138000，住址我也有，需要的私聊我。"
+  },
+  {
+    "id": "dev-019",
+    "targetType": "ARTICLE",
+    "category": "sensitive",
+    "label": "REJECT",
+    "labelReason": "§2.3 X-2 寻求规避实名认证的违法方法",
+    "content": "请问怎么绕过实名认证注册账号？有没有不用身份证就能通过验证的办法？"
+  },
+  {
+    "id": "dev-020",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-5 推荐自己的开源项目，无联系方式、无利益诱饵",
+    "content": "我开源的日志脱敏工具刚发了 1.0 版本，支持自定义规则，欢迎试用并提 issue。"
+  }
+]

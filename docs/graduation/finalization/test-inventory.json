@@ -1,0 +1,682 @@
+{
+  "entries": [
+    {
+      "path": "src/test/java/com/bitforum/BitForumSpringApplicationTests.java",
+      "class": "com.bitforum.BitForumSpringApplicationTests",
+      "set": "integration",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/agent/DeepSeekSmokeTest.java",
+      "class": "com.bitforum.ai.agent.DeepSeekSmokeTest",
+      "set": "external-ai",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/agent/QaAgentFaultInjectionIntegrationTest.java",
+      "class": "com.bitforum.ai.agent.QaAgentFaultInjectionIntegrationTest",
+      "set": "integration",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/agent/QaAgentToolExposureTest.java",
+      "class": "com.bitforum.ai.agent.QaAgentToolExposureTest",
+      "set": "unit",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/analyst/AiInsightGenerationServiceTest.java",
+      "class": "com.bitforum.ai.analyst.AiInsightGenerationServiceTest",
+      "set": "unit",
+      "test_annotations": 3
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/analyst/AiInsightServiceTest.java",
+      "class": "com.bitforum.ai.analyst.AiInsightServiceTest",
+      "set": "unit",
+      "test_annotations": 7
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/analyst/AiInsightSmokeTest.java",
+      "class": "com.bitforum.ai.analyst.AiInsightSmokeTest",
+      "set": "external-ai",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/analyst/AnalystAgentTest.java",
+      "class": "com.bitforum.ai.analyst.AnalystAgentTest",
+      "set": "unit",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/analyst/AnalystInsightProbe.java",
+      "class": "com.bitforum.ai.analyst.AnalystInsightProbe",
+      "set": "external-ai",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/controller/AiControllerTest.java",
+      "class": "com.bitforum.ai.controller.AiControllerTest",
+      "set": "integration",
+      "test_annotations": 11
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/controller/AiFaultInjectionHttpTest.java",
+      "class": "com.bitforum.ai.controller.AiFaultInjectionHttpTest",
+      "set": "integration",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/controller/AiRecommendationTest.java",
+      "class": "com.bitforum.ai.controller.AiRecommendationTest",
+      "set": "integration",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/degrade/AiDegradeGuardTest.java",
+      "class": "com.bitforum.ai.degrade.AiDegradeGuardTest",
+      "set": "unit",
+      "test_annotations": 6
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/embedding/EmbeddingModelComparisonProbe.java",
+      "class": "com.bitforum.ai.embedding.EmbeddingModelComparisonProbe",
+      "set": "optional-probe",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/embedding/OnnxEmbeddingSmokeTest.java",
+      "class": "com.bitforum.ai.embedding.OnnxEmbeddingSmokeTest",
+      "set": "integration",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/memory/MysqlChatMemoryRepositoryTest.java",
+      "class": "com.bitforum.ai.memory.MysqlChatMemoryRepositoryTest",
+      "set": "integration",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/moderation/ModerationAgentSmokeTest.java",
+      "class": "com.bitforum.ai.moderation.ModerationAgentSmokeTest",
+      "set": "external-ai",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/moderation/ModerationAutoReviewIntegrationTest.java",
+      "class": "com.bitforum.ai.moderation.ModerationAutoReviewIntegrationTest",
+      "set": "external-ai",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/moderation/ModerationEvaluationTest.java",
+      "class": "com.bitforum.ai.moderation.ModerationEvaluationTest",
+      "set": "external-ai",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/moderation/ModerationMessageListenerTest.java",
+      "class": "com.bitforum.ai.moderation.ModerationMessageListenerTest",
+      "set": "unit",
+      "test_annotations": 6
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/moderation/ModerationServiceTest.java",
+      "class": "com.bitforum.ai.moderation.ModerationServiceTest",
+      "set": "unit",
+      "test_annotations": 12
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/observation/M18EndToEndObservationTest.java",
+      "class": "com.bitforum.ai.observation.M18EndToEndObservationTest",
+      "set": "external-ai",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/observation/M18MainFlowIsolationTest.java",
+      "class": "com.bitforum.ai.observation.M18MainFlowIsolationTest",
+      "set": "integration",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/observation/M18PersistenceObservationTest.java",
+      "class": "com.bitforum.ai.observation.M18PersistenceObservationTest",
+      "set": "integration",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/orchestrator/AgentOrchestratorTest.java",
+      "class": "com.bitforum.ai.orchestrator.AgentOrchestratorTest",
+      "set": "integration",
+      "test_annotations": 12
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/rag/ArticleChunkingServiceTest.java",
+      "class": "com.bitforum.ai.rag.ArticleChunkingServiceTest",
+      "set": "unit",
+      "test_annotations": 6
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/rag/KbAutoIndexIntegrationTest.java",
+      "class": "com.bitforum.ai.rag.KbAutoIndexIntegrationTest",
+      "set": "integration",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/rag/KbIndexMessageListenerTest.java",
+      "class": "com.bitforum.ai.rag.KbIndexMessageListenerTest",
+      "set": "unit",
+      "test_annotations": 7
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/rag/KbIndexServiceTest.java",
+      "class": "com.bitforum.ai.rag.KbIndexServiceTest",
+      "set": "integration",
+      "test_annotations": 5
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/rag/RagQaSmokeTest.java",
+      "class": "com.bitforum.ai.rag.RagQaSmokeTest",
+      "set": "external-ai",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/rag/RagServiceIndexStatusFilterTest.java",
+      "class": "com.bitforum.ai.rag.RagServiceIndexStatusFilterTest",
+      "set": "unit",
+      "test_annotations": 3
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/rag/RagServiceTest.java",
+      "class": "com.bitforum.ai.rag.RagServiceTest",
+      "set": "integration",
+      "test_annotations": 3
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/rag/RedisVectorStoreSmokeTest.java",
+      "class": "com.bitforum.ai.rag.RedisVectorStoreSmokeTest",
+      "set": "integration",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/recommend/RecommendFusionServiceTest.java",
+      "class": "com.bitforum.ai.recommend.RecommendFusionServiceTest",
+      "set": "unit",
+      "test_annotations": 8
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/recommend/RecommendReasonProbe.java",
+      "class": "com.bitforum.ai.recommend.RecommendReasonProbe",
+      "set": "external-ai",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/recommend/RecommendReasonSmokeTest.java",
+      "class": "com.bitforum.ai.recommend.RecommendReasonSmokeTest",
+      "set": "external-ai",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/recommend/RecommendRecallServiceTest.java",
+      "class": "com.bitforum.ai.recommend.RecommendRecallServiceTest",
+      "set": "unit",
+      "test_annotations": 7
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/recommend/RecommendServiceTest.java",
+      "class": "com.bitforum.ai.recommend.RecommendServiceTest",
+      "set": "unit",
+      "test_annotations": 17
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/recommend/RecommendVectorRecallProbe.java",
+      "class": "com.bitforum.ai.recommend.RecommendVectorRecallProbe",
+      "set": "optional-probe",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/recommend/eval/M17CorpusDiscriminationCheck.java",
+      "class": "com.bitforum.ai.recommend.eval.M17CorpusDiscriminationCheck",
+      "set": "optional-probe",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/recommend/eval/M17EvalCorpus.java",
+      "class": "com.bitforum.ai.recommend.eval.M17EvalCorpus",
+      "set": "support",
+      "test_annotations": 0
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/recommend/eval/M17EvalDataSeeder.java",
+      "class": "com.bitforum.ai.recommend.eval.M17EvalDataSeeder",
+      "set": "optional-probe",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/recommend/eval/M17RecommendEvaluation.java",
+      "class": "com.bitforum.ai.recommend.eval.M17RecommendEvaluation",
+      "set": "optional-probe",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/repository/M17PersistenceIntegrationTest.java",
+      "class": "com.bitforum.ai.repository.M17PersistenceIntegrationTest",
+      "set": "integration",
+      "test_annotations": 3
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/service/AiConversationServiceStatsTest.java",
+      "class": "com.bitforum.ai.service.AiConversationServiceStatsTest",
+      "set": "unit",
+      "test_annotations": 3
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/service/AiConversationStatsIntegrationTest.java",
+      "class": "com.bitforum.ai.service.AiConversationStatsIntegrationTest",
+      "set": "integration",
+      "test_annotations": 3
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/tool/ArticleToolsTest.java",
+      "class": "com.bitforum.ai.tool.ArticleToolsTest",
+      "set": "integration",
+      "test_annotations": 19
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/tool/ToolRegistryTest.java",
+      "class": "com.bitforum.ai.tool.ToolRegistryTest",
+      "set": "unit",
+      "test_annotations": 7
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/trace/M18AsyncTraceProbe.java",
+      "class": "com.bitforum.ai.trace.M18AsyncTraceProbe",
+      "set": "optional-probe",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/trace/ToolCallTraceProbe.java",
+      "class": "com.bitforum.ai.trace.ToolCallTraceProbe",
+      "set": "optional-probe",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/trace/ToolCallTraceSmokeProbe.java",
+      "class": "com.bitforum.ai.trace.ToolCallTraceSmokeProbe",
+      "set": "external-ai",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/trace/TraceRecorderIntegrationTest.java",
+      "class": "com.bitforum.ai.trace.TraceRecorderIntegrationTest",
+      "set": "integration",
+      "test_annotations": 6
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/usage/AiBudgetEnforcementIntegrationTest.java",
+      "class": "com.bitforum.ai.usage.AiBudgetEnforcementIntegrationTest",
+      "set": "integration",
+      "test_annotations": 5
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/usage/AiInputLengthConsistencyTest.java",
+      "class": "com.bitforum.ai.usage.AiInputLengthConsistencyTest",
+      "set": "integration",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/usage/AiTokenBudgetGuardTest.java",
+      "class": "com.bitforum.ai.usage.AiTokenBudgetGuardTest",
+      "set": "unit",
+      "test_annotations": 10
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/usage/AiUsageRecorderTest.java",
+      "class": "com.bitforum.ai.usage.AiUsageRecorderTest",
+      "set": "unit",
+      "test_annotations": 3
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/ActuatorHealthControllerTest.java",
+      "class": "com.bitforum.controller.ActuatorHealthControllerTest",
+      "set": "integration",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminAiInsightControllerTest.java",
+      "class": "com.bitforum.controller.AdminAiInsightControllerTest",
+      "set": "integration",
+      "test_annotations": 6
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminAiKbControllerTest.java",
+      "class": "com.bitforum.controller.AdminAiKbControllerTest",
+      "set": "integration",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminAiModerationControllerTest.java",
+      "class": "com.bitforum.controller.AdminAiModerationControllerTest",
+      "set": "integration",
+      "test_annotations": 7
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminAiTraceControllerTest.java",
+      "class": "com.bitforum.controller.AdminAiTraceControllerTest",
+      "set": "integration",
+      "test_annotations": 6
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminAiUsageControllerTest.java",
+      "class": "com.bitforum.controller.AdminAiUsageControllerTest",
+      "set": "integration",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminArticleControllerTest.java",
+      "class": "com.bitforum.controller.AdminArticleControllerTest",
+      "set": "integration",
+      "test_annotations": 10
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminCategoryControllerTest.java",
+      "class": "com.bitforum.controller.AdminCategoryControllerTest",
+      "set": "integration",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminCommentControllerTest.java",
+      "class": "com.bitforum.controller.AdminCommentControllerTest",
+      "set": "integration",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminDashboardControllerTest.java",
+      "class": "com.bitforum.controller.AdminDashboardControllerTest",
+      "set": "unit",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminHealthControllerTest.java",
+      "class": "com.bitforum.controller.AdminHealthControllerTest",
+      "set": "integration",
+      "test_annotations": 5
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminReportControllerTest.java",
+      "class": "com.bitforum.controller.AdminReportControllerTest",
+      "set": "integration",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminTextModerationControllerTest.java",
+      "class": "com.bitforum.controller.AdminTextModerationControllerTest",
+      "set": "integration",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/AdminUserControllerTest.java",
+      "class": "com.bitforum.controller.AdminUserControllerTest",
+      "set": "integration",
+      "test_annotations": 5
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/ArticleControllerTest.java",
+      "class": "com.bitforum.controller.ArticleControllerTest",
+      "set": "integration",
+      "test_annotations": 11
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/ArticleDetailInteractionStateTest.java",
+      "class": "com.bitforum.controller.ArticleDetailInteractionStateTest",
+      "set": "integration",
+      "test_annotations": 9
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/ArticleDetailVisibilityTest.java",
+      "class": "com.bitforum.controller.ArticleDetailVisibilityTest",
+      "set": "integration",
+      "test_annotations": 13
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/ArticleRecommendationTest.java",
+      "class": "com.bitforum.controller.ArticleRecommendationTest",
+      "set": "integration",
+      "test_annotations": 5
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/CoreApiExceptionContractTest.java",
+      "class": "com.bitforum.controller.CoreApiExceptionContractTest",
+      "set": "unit",
+      "test_annotations": 7
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/FileUploadControllerTest.java",
+      "class": "com.bitforum.controller.FileUploadControllerTest",
+      "set": "integration",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/FileUploadIntegrationTest.java",
+      "class": "com.bitforum.controller.FileUploadIntegrationTest",
+      "set": "integration",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/OpenApiControllerTest.java",
+      "class": "com.bitforum.controller.OpenApiControllerTest",
+      "set": "integration",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/UserControllerTest.java",
+      "class": "com.bitforum.controller.UserControllerTest",
+      "set": "integration",
+      "test_annotations": 3
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/UserFollowControllerTest.java",
+      "class": "com.bitforum.controller.UserFollowControllerTest",
+      "set": "integration",
+      "test_annotations": 8
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/UserNotificationControllerTest.java",
+      "class": "com.bitforum.controller.UserNotificationControllerTest",
+      "set": "integration",
+      "test_annotations": 5
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/UserProfileControllerTest.java",
+      "class": "com.bitforum.controller.UserProfileControllerTest",
+      "set": "integration",
+      "test_annotations": 7
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/UserReportControllerTest.java",
+      "class": "com.bitforum.controller.UserReportControllerTest",
+      "set": "integration",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/job/ArticleMetricSyncJobTest.java",
+      "class": "com.bitforum.job.ArticleMetricSyncJobTest",
+      "set": "integration",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/AdminDashboardServiceTest.java",
+      "class": "com.bitforum.service.AdminDashboardServiceTest",
+      "set": "integration",
+      "test_annotations": 3
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/AdminHealthServiceTest.java",
+      "class": "com.bitforum.service.AdminHealthServiceTest",
+      "set": "unit",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/ArticleMetricSyncServiceTest.java",
+      "class": "com.bitforum.service.ArticleMetricSyncServiceTest",
+      "set": "integration",
+      "test_annotations": 3
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/ArticleServiceTest.java",
+      "class": "com.bitforum.service.ArticleServiceTest",
+      "set": "integration",
+      "test_annotations": 30
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/CategoryServiceTest.java",
+      "class": "com.bitforum.service.CategoryServiceTest",
+      "set": "integration",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/Cm22IntegrationTest.java",
+      "class": "com.bitforum.service.Cm22IntegrationTest",
+      "set": "cm22",
+      "test_annotations": 20
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/Cm22MigrationTest.java",
+      "class": "com.bitforum.service.Cm22MigrationTest",
+      "set": "cm22",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/Cm23PresentationIntegrationTest.java",
+      "class": "com.bitforum.service.Cm23PresentationIntegrationTest",
+      "set": "cm23",
+      "test_annotations": 6
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/Cm24IntegrationTest.java",
+      "class": "com.bitforum.service.Cm24IntegrationTest",
+      "set": "cm24",
+      "test_annotations": 9
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/Cm24MigrationTest.java",
+      "class": "com.bitforum.service.Cm24MigrationTest",
+      "set": "cm24",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/CommentServiceTest.java",
+      "class": "com.bitforum.service.CommentServiceTest",
+      "set": "integration",
+      "test_annotations": 6
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/ContentReportServiceTest.java",
+      "class": "com.bitforum.service.ContentReportServiceTest",
+      "set": "integration",
+      "test_annotations": 14
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/FileUploadServiceTest.java",
+      "class": "com.bitforum.service.FileUploadServiceTest",
+      "set": "unit",
+      "test_annotations": 12
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/FollowFeedCursorTest.java",
+      "class": "com.bitforum.service.FollowFeedCursorTest",
+      "set": "unit",
+      "test_annotations": 5
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/ImageResourceIntegrationTest.java",
+      "class": "com.bitforum.service.ImageResourceIntegrationTest",
+      "set": "integration",
+      "test_annotations": 6
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/KbIndexTriggerTest.java",
+      "class": "com.bitforum.service.KbIndexTriggerTest",
+      "set": "integration",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/ModerationTriggerTest.java",
+      "class": "com.bitforum.service.ModerationTriggerTest",
+      "set": "integration",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/NotificationListenerTest.java",
+      "class": "com.bitforum.service.NotificationListenerTest",
+      "set": "unit",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/NotificationServiceTest.java",
+      "class": "com.bitforum.service.NotificationServiceTest",
+      "set": "integration",
+      "test_annotations": 5
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/QuestionIntegrationTest.java",
+      "class": "com.bitforum.service.QuestionIntegrationTest",
+      "set": "integration",
+      "test_annotations": 12
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/QuestionMigrationTest.java",
+      "class": "com.bitforum.service.QuestionMigrationTest",
+      "set": "integration",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/RedisServiceTest.java",
+      "class": "com.bitforum.service.RedisServiceTest",
+      "set": "integration",
+      "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/TextModerationIntegrationTest.java",
+      "class": "com.bitforum.service.TextModerationIntegrationTest",
+      "set": "integration",
+      "test_annotations": 8
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/UserFollowIntegrationTest.java",
+      "class": "com.bitforum.service.UserFollowIntegrationTest",
+      "set": "integration",
+      "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/UserFollowServiceTest.java",
+      "class": "com.bitforum.service.UserFollowServiceTest",
+      "set": "unit",
+      "test_annotations": 8
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/UserServiceTest.java",
+      "class": "com.bitforum.service.UserServiceTest",
+      "set": "unit",
+      "test_annotations": 11
+    },
+    {
+      "path": "src/test/java/com/bitforum/testsupport/IsolatedTestInitializer.java",
+      "class": "com.bitforum.testsupport.IsolatedTestInitializer",
+      "set": "support",
+      "test_annotations": 0
+    },
+    {
+      "path": "src/test/java/com/bitforum/testsupport/IsolatedTestTarget.java",
+      "class": "com.bitforum.testsupport.IsolatedTestTarget",
+      "set": "support",
+      "test_annotations": 0
+    },
+    {
+      "path": "src/test/java/com/bitforum/testsupport/IsolatedTestTargetTest.java",
+      "class": "com.bitforum.testsupport.IsolatedTestTargetTest",
+      "set": "unit",
+      "test_annotations": 4
+    }
+  ]
+}

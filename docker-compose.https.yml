@@ -1,0 +1,16 @@
+# Requires Docker Compose 2.24.4+ for !override. Apply only after deployment approval.
+services:
+  app:
+    ports: !reset []
+  frontend:
+    ports: !override
+      - "${BITFORUM_BIND_ADDRESS:-127.0.0.1}:80:80"
+      - "${BITFORUM_BIND_ADDRESS:-127.0.0.1}:443:443"
+    volumes:
+      - ./frontend/nginx.https.conf:/etc/nginx/conf.d/default.conf:ro
+      - type: bind
+        source: ${BITFORUM_TLS_DIR:?Set absolute certificate directory containing server.crt and server.key}
+        target: /etc/nginx/tls
+        read_only: true
+        bind:
+          create_host_path: false

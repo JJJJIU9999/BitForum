@@ -1,0 +1,242 @@
+[
+  {
+    "id": "test-001",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常技术提问",
+    "content": "G1 的 Mixed GC 触发时机是怎么决定的？有没有办法观察每次回收的具体原因？"
+  },
+  {
+    "id": "test-002",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常踩坑记录",
+    "content": "记一次 K8s 部署踩坑：探针的 initialDelaySeconds 设太短，应用还没起来就被重启，一直 CrashLoopBackOff。"
+  },
+  {
+    "id": "test-003",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-2 针对方案的批评",
+    "content": "这个抽象层次设计得有点过度了，为了扩展性引入了三层接口，实际只有一个实现。"
+  },
+  {
+    "id": "test-004",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-3 单个短互动",
+    "content": "mark 一下，回头细看。"
+  },
+  {
+    "id": "test-005",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常求助",
+    "content": "接口偶发 502，Nginx 日志显示 upstream prematurely closed，但应用日志没有任何异常，该从哪查？"
+  },
+  {
+    "id": "test-006",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-5 推荐开源工具，无诱饵",
+    "content": "推荐一下 jq，解析 JSON 特别方便，配合 curl 用能省不少事。"
+  },
+  {
+    "id": "test-007",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常教程",
+    "content": "手写一个简易的分布式锁（二）：基于 Redis 的实现与常见错误用法分析。"
+  },
+  {
+    "id": "test-008",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常纠错",
+    "content": "示例代码里少了一个分号，另外 import 路径写错了，应该是 com.example.demo。"
+  },
+  {
+    "id": "test-009",
+    "targetType": "COMMENT",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-4 无关闲聊",
+    "content": "楼下那家咖啡不错，写代码累了可以去坐坐。"
+  },
+  {
+    "id": "test-010",
+    "targetType": "ARTICLE",
+    "category": "normal",
+    "label": "PASS",
+    "labelReason": "§2.4 N-1 正常经验分享",
+    "content": "实习三个月的一点感受：代码 review 时先讲清楚为什么这么写，比只贴代码有效得多。"
+  },
+  {
+    "id": "test-011",
+    "targetType": "ARTICLE",
+    "category": "promotion",
+    "label": "REJECT",
+    "labelReason": "§2.3 P-1 含微信的账号交易导流",
+    "content": "出售几个闲置的云服务器账号，配置都不错，需要的加微信 vps888 聊。"
+  },
+  {
+    "id": "test-012",
+    "targetType": "COMMENT",
+    "category": "promotion",
+    "label": "REJECT",
+    "labelReason": "§2.3 P-2 利益诱饵（免费领）",
+    "content": "免费送 200 套简历模板和面试题，留言邮箱我统一发送，先到先得。"
+  },
+  {
+    "id": "test-013",
+    "targetType": "COMMENT",
+    "category": "promotion",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-1 模糊引流，无联系方式与链接",
+    "content": "我整理过一套完整的排查手册，有兴趣的可以看看我的个人主页。"
+  },
+  {
+    "id": "test-014",
+    "targetType": "ARTICLE",
+    "category": "promotion",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-2 站外链接，技术内容是否属营销需人工判断",
+    "content": "完整的性能对比数据放在我自己的博客上，链接：blog.example.org/benchmark，结论都在里面。"
+  },
+  {
+    "id": "test-015",
+    "targetType": "COMMENT",
+    "category": "promotion",
+    "label": "PASS",
+    "labelReason": "§2.4 N-5 推荐工具，无导流",
+    "content": "这个场景用 Caffeine 更合适，本地缓存性能比 Guava 好不少。"
+  },
+  {
+    "id": "test-016",
+    "targetType": "ARTICLE",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-1 索取银行卡信息",
+    "content": "因系统升级，请提供你的银行卡号与开户行，我们将在 24 小时内完成账户迁移。"
+  },
+  {
+    "id": "test-017",
+    "targetType": "ARTICLE",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-2 虚假高薪兼职",
+    "content": "急招线上兼职，每天两小时日结 500，无需经验，添加联系人即可开始。"
+  },
+  {
+    "id": "test-018",
+    "targetType": "COMMENT",
+    "category": "fraud",
+    "label": "REJECT",
+    "labelReason": "§2.3 F-1 假冒平台索取验证码",
+    "content": "我是平台小二，检测到你的账号有风险，请提供短信验证码帮你解冻。"
+  },
+  {
+    "id": "test-019",
+    "targetType": "COMMENT",
+    "category": "fraud",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-4 话术可疑但缺少明确诈骗特征",
+    "content": "有个内部的返现活动，名额不多了，想参与的可以私信我了解规则。"
+  },
+  {
+    "id": "test-020",
+    "targetType": "COMMENT",
+    "category": "harmful",
+    "label": "REJECT",
+    "labelReason": "§2.3 H-1 人身攻击",
+    "content": "你这种水平也配在这发帖？回去再学两年吧，别耽误别人时间。"
+  },
+  {
+    "id": "test-021",
+    "targetType": "COMMENT",
+    "category": "harmful",
+    "label": "REJECT",
+    "labelReason": "§2.3 H-2 地域歧视",
+    "content": "这种代码一看就是某些地方的外包写的，风格一言难尽。"
+  },
+  {
+    "id": "test-022",
+    "targetType": "COMMENT",
+    "category": "harmful",
+    "label": "REJECT",
+    "labelReason": "§2.3 H-3 暴力威胁",
+    "content": "你再删我评论试试，我记住你 ID 了，有本事线下见。"
+  },
+  {
+    "id": "test-023",
+    "targetType": "COMMENT",
+    "category": "harmful",
+    "label": "PASS",
+    "labelReason": "§2.4 N-2 否定观点但不攻击个人",
+    "content": "这个说法有误导性，GC 停顿和吞吐并不是简单的取舍关系，得看具体场景。"
+  },
+  {
+    "id": "test-024",
+    "targetType": "COMMENT",
+    "category": "spam",
+    "label": "REJECT",
+    "labelReason": "§2.3 S-1 连续重复字符远超 8 个",
+    "content": "好好好好好好好好好好好好好好好好好好好好"
+  },
+  {
+    "id": "test-025",
+    "targetType": "COMMENT",
+    "category": "spam",
+    "label": "REJECT",
+    "labelReason": "§2.3 S-2 纯乱码",
+    "content": "jkhdfg 98)()( ;;lkjhgf ~~~~"
+  },
+  {
+    "id": "test-026",
+    "targetType": "COMMENT",
+    "category": "spam",
+    "label": "PASS",
+    "labelReason": "§2.4 N-3 单次短互动",
+    "content": "感谢，解决了我的问题。"
+  },
+  {
+    "id": "test-027",
+    "targetType": "COMMENT",
+    "category": "spam",
+    "label": "REJECT",
+    "labelReason": "§2.3 S-1 同一内容重复 3 次（达到阈值）",
+    "content": "求互关求互关求互关"
+  },
+  {
+    "id": "test-028",
+    "targetType": "ARTICLE",
+    "category": "sensitive",
+    "label": "REJECT",
+    "labelReason": "§2.3 X-1 泄露身份证信息",
+    "content": "曝光一个骗子，身份证号 110101199001011234，大家小心点。"
+  },
+  {
+    "id": "test-029",
+    "targetType": "ARTICLE",
+    "category": "sensitive",
+    "label": "REJECT",
+    "labelReason": "§2.3 X-2 寻求外挂等违法工具",
+    "content": "求一个能自动抢课的脚本或者外挂，有偿，能绕过验证码的优先。"
+  },
+  {
+    "id": "test-030",
+    "targetType": "COMMENT",
+    "category": "sensitive",
+    "label": "REVIEW",
+    "labelReason": "§2.5 B-3 影射式表达，未展开",
+    "content": "有些事不方便在这说，你们自己想想就明白了，我不多说。"
+  }
+]

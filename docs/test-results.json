@@ -1,0 +1,118 @@
+{
+  "source_import_commit": "ad97deb95dd444f1ad4367dec3baf7ed58b41540",
+  "release_base": "56a20a0e8c7df8081b39931dbe706ff1f4c4744f",
+  "execution_date": "2026-10-11",
+  "scope": "Independent release worktree build/tests; not reused Finalization evidence",
+  "sets": [
+    {
+      "set": "unit",
+      "status": "PASS",
+      "counts": {
+        "tests": 323,
+        "passed": 323,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "missing_classes": []
+    },
+    {
+      "set": "integration",
+      "status": "PASS",
+      "counts": {
+        "tests": 324,
+        "passed": 324,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "missing_classes": []
+    },
+    {
+      "set": "cm22",
+      "status": "PASS",
+      "counts": {
+        "tests": 21,
+        "passed": 21,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "missing_classes": []
+    },
+    {
+      "set": "cm23",
+      "status": "PASS",
+      "counts": {
+        "tests": 6,
+        "passed": 6,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "missing_classes": []
+    },
+    {
+      "set": "cm24",
+      "status": "PASS",
+      "counts": {
+        "tests": 10,
+        "passed": 10,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      },
+      "missing_classes": []
+    },
+    {
+      "set": "external-ai",
+      "status": "SKIPPED_BY_POLICY",
+      "counts": {
+        "tests": 13,
+        "passed": 0,
+        "failures": 0,
+        "errors": 0,
+        "skipped": 13
+      },
+      "missing_classes": []
+    }
+  ],
+  "mandatory_backend_passed": 684,
+  "frontend": {
+    "files": 18,
+    "passed": 127,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "tests_exit_code": 0,
+    "build_exit_code": 0,
+    "install": "npm ci --offline, existing lock file"
+  },
+  "protected_count": 15,
+  "protected_unchanged": true,
+  "owned_resources_remaining": false,
+  "cleanup_exit_code": 0,
+  "github_actions_executed": false,
+  "optional_probes_executed": false,
+  "current_browser_validation_executed": false,
+  "default_no_services_repeat": {
+    "counts": {
+      "tests": 323,
+      "passed": 323,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    "status": "PASS",
+    "not_added_again_to_684": true
+  },
+  "backend_build": {
+    "status": "BUILD_PASS",
+    "exit_code": 0,
+    "java_version": 17,
+    "command": "./mvnw -o -B -s maven-settings.xml -DskipTests package",
+    "tests_counted": false,
+    "jar_sha256": "28387ca741121abe9c2e38002447157271858b766fa8034482a8c1d1639b2fec",
+    "runtime_started": false
+  }
+}

@@ -1,0 +1,2 @@
+**/Cm22IntegrationTest.java
+**/Cm22MigrationTest.java

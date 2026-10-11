@@ -1,0 +1,8 @@
+target/
+.git/
+.idea/
+.vscode/
+*.log
+.env
+deploy/tls/
+mysql-data/

@@ -1,0 +1,61 @@
+HELP.md
+# macOS Finder metadata is local state, not project evidence.
+.DS_Store
+__pycache__/
+简历描述.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Docker ###
+mysql-data/
+uploads/
+
+### Frontend ###
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+### 敏感文件 ###
+*.log
+.env
+.env.*
+!.env.example
+# 本机启动脚本：包含从 .env 读取凭据的逻辑，按开发者本机环境各自维护
+run-local.cmd
+run-local.sh
+dev.sh
+stop-local.sh
+.dev-logs/
+
+# C-M20 local certificate material, including private CA keys.
+deploy/tls/

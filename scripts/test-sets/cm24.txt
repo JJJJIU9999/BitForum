@@ -1,0 +1,2 @@
+**/Cm24IntegrationTest.java
+**/Cm24MigrationTest.java

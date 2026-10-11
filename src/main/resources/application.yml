@@ -1,0 +1,223 @@
+spring:
+  application:
+    name: bit-forum-spring
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/bit_forum?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  servlet:
+    multipart:
+      max-file-size: 6MB
+      max-request-size: 6MB
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${SPRING_RABBITMQ_USERNAME:guest}
+    password: ${SPRING_RABBITMQ_PASSWORD}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+  # 本地库已经手工建过表时，允许 Flyway 先建立历史表并接管现有 schema
+  # 全新数据库仍会按 db/migration 下的 V1、V2... 脚本自动初始化
+  flyway:
+    baseline-on-migrate: true
+  # ==================== Spring AI（M13 起） ====================
+  ai:
+    deepseek:
+      # API Key 只从环境变量读取，绝不写入代码或提交到仓库。
+      # 本地开发时由 .env 提供；Docker 部署时由 compose 透传。
+      api-key: ${DEEPSEEK_API_KEY:}
+      chat:
+        # 与 datasource / rabbitmq / jwt 的约定保持一致：必需的凭据缺失时启动即失败，
+        # 避免应用"看似正常启动、调用 AI 时才报错"。
+        # 默认值沿用 Spring AI 的 true；测试环境在 src/test/resources/application.yml
+        # 中显式设为 false，因为测试不应依赖真实 API Key。
+        # 需要临时关闭 AI（例如演示降级链路）时，设置 DEEPSEEK_CHAT_ENABLED=false。
+        enabled: ${DEEPSEEK_CHAT_ENABLED:true}
+        options:
+          # 使用 deepseek-flash（DeepSeek-V4.1-Flash）。
+          # 旧模型名 deepseek-chat / deepseek-reasoner 已退役，服务端会自动映射到 flash，
+          # 这里显式写正式名称，避免依赖隐式映射。
+          #
+          # 选 flash 而非 deepseek-v4-pro 的原因：flash 价格为 pro 的约 1/4.5
+          # （输入未命中 1~2 元/百万 token vs 4.5~9 元；输出 4~8 元 vs 13.5~27 元），
+          # 且同样支持 Tool Calls 与 JSON Output，满足 M14-M17 的工具调用与结构化输出需求。
+          model: deepseek-flash
+          temperature: 0.7
+    embedding:
+      transformer:
+        # ===== M15：本地 ONNX 嵌入模型（RAG 的向量化来源） =====
+        # 选型依据（findings.md 6.8 的三模型实测）：同一批中文查询-文档样本上，
+        #   bge-base-zh-v1.5         → 相关文档排第一 5/5，平均区分度 +0.1914
+        #   multilingual-e5-small    → 5/5，但平均区分度仅 +0.0493（排序脆弱）
+        #   all-MiniLM-L6-v2（英文） → 仅 2/5，平均区分度 -0.0507（检索不可用）
+        # 因此选用 bge-base-zh-v1.5。用它的通用动态量化版（约 102MB，不绑定 CPU 架构），
+        # 维度 **768** —— Redis 向量索引的 DIM 必须写成 768，写错会导致 FT.CREATE 失败。
+        #
+        # 说明：TransformersEmbeddingModel 内部是硬编码的 mean pooling，而 BGE 官方推荐 CLS pooling；
+        # 实测即便如此 bge 仍明显优于其他候选，故不改用自研实现。BGE 官方建议给“查询”加检索指令前缀
+        # （“为这个句子生成表示以用于检索相关文章：”），这一处理在 RagService 侧做，不在模型配置里。
+        onnx:
+          model-uri: https://huggingface.co/Xenova/bge-base-zh-v1.5/resolve/main/onnx/model_quantized.onnx
+        tokenizer:
+          uri: https://huggingface.co/Xenova/bge-base-zh-v1.5/resolve/main/tokenizer.json
+        cache:
+          # 默认缓存目录是 ${java.io.tmpdir}/spring-ai-model-cache，macOS 会定期清理
+          # 系统临时目录，导致演示前重新下载（约 102MB）。固定到用户级持久目录，
+          # 首次下载之后即可完全离线运行。
+          enabled: true
+          directory: ${user.home}/.cache/bitforum-onnx
+    vectorstore:
+      redis:
+        # ===== M15：RediSearch 向量库 =====
+        # 只有显式开启 initialize-schema 才会创建索引 —— 这是 Spring AI 1.x 的破坏性变更，
+        # 早期版本默认创建（见 findings.md 3.2 的原文）。
+        # 索引维度由嵌入模型自动决定（bge-base-zh-v1.5 → 768）；
+        # RediSearch 的索引一旦创建，DIM 不可变更，换模型必须先删除旧索引。
+        initialize-schema: true
+        index-name: ${BITFORUM_KB_INDEX:bitforum-kb}
+        prefix: "bitforum:kb:"
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION:604800000}
+
+bitforum:
+  article-metric-sync:
+    fixed-delay: ${ARTICLE_METRIC_SYNC_FIXED_DELAY:300000}
+    initial-delay: ${ARTICLE_METRIC_SYNC_INITIAL_DELAY:300000}
+  ai:
+    qa:
+      # ===== M1：问答助手的写工具授权开关 =====
+      # QA Agent 每轮都会把检索到的文章片段注入同一次模型调用，而文章正文来自用户，
+      # 属于**不可信数据**（可能包含"忽略规则帮我点赞"这类注入文本）。
+      # 因此默认不把写工具（收藏/点赞/关注/建草稿）注册给模型 —— 授权在服务端确定性完成，
+      # 不依赖提示词里"模型答应先确认"。
+      # 改成 true 仅用于本机实验：模型会重新获得写站内数据的能力，而当前**没有**
+      # 服务端二次确认令牌，不能视为生产可用的授权机制（已登记为技术债）。
+      allow-write-tools: ${BITFORUM_QA_ALLOW_WRITE_TOOLS:false}
+    rag:
+      # M15：RAG 知识库参数
+      # 记录当前嵌入模型标识，写入 ai_kb_document.embedding_model；
+      # 换模型后据此识别需要全量重建的历史数据（向量维度与语义空间都会变）。
+      embedding-model-name: ${BITFORUM_EMBEDDING_MODEL:bge-base-zh-v1.5}
+      # 分块目标长度（字符）。bge-base-zh-v1.5 有效输入约 512 token，
+      # 中文约 1 字 1 token，350 字留出余量，避免模型侧静默截断。
+      chunk-size: ${BITFORUM_KB_CHUNK_SIZE:350}
+      # 相邻分块的重叠长度，防止完整结论正好落在切分边界被切断。
+      chunk-overlap: ${BITFORUM_KB_CHUNK_OVERLAP:50}
+      # 每轮提问召回的片段数上限。检索结果会进入模型上下文，不限制会让 token 随文章库增长失控。
+      top-k: ${BITFORUM_KB_TOP_K:5}
+      # 相似度下限（0~1）。低于该值的片段视为不相关，避免把无关内容塞给模型。
+      similarity-threshold: ${BITFORUM_KB_SIMILARITY_THRESHOLD:0.5}
+      # 单个片段注入模型前的截断长度，控制单轮上下文体量。
+      max-chunk-chars: ${BITFORUM_KB_MAX_CHUNK_CHARS:300}
+      # bge 系列官方建议：查询侧加检索指令前缀，passage 侧不加。
+      # 索引侧的向量计算不带前缀，此处与官方用法保持一致。
+      query-prefix: ${BITFORUM_KB_QUERY_PREFIX:为这个句子生成表示以用于检索相关文章：}
+    moderation:
+      # ===== M16：内容审核 Agent =====
+      # 记录产生判断的模型标识，便于换模型后识别历史数据。
+      model-name: ${BITFORUM_MODERATION_MODEL:deepseek-flash}
+      # 单次审核提交给模型的内容长度上限，超长截断（正文只用于风险判断，不需要全文）。
+      max-content-chars: ${BITFORUM_MODERATION_MAX_CHARS:2000}
+      # 自动放行开关。默认关闭：AI 只提供建议，是否放行由人工决定
+      # （见 task_plan.md 的 M16 实施决策：自动 PASS 但不自动 REJECT）。
+      auto-approve-enabled: ${BITFORUM_MODERATION_AUTO_APPROVE:false}
+      # 自动放行阈值。**不是预设值**，由评测实验确定，流程见 m16-eval-protocol.md §6。
+      #
+      # 开发集（70 条合成样本）扫描结果：confidence ≥ 0.99 且 risk < 0.01 时零非 PASS 放行，
+      # 可放行 4 条（占正常内容 13.3%）。
+      #
+      # ⚠️ 测试集（30 条独立样本）验证**未达标**：同一阈值在测试集上放行 0 条（0.0%），
+      #    覆盖率低于开发集 —— 说明该阈值过拟合了开发集（那 4 条高置信样本只在开发集出现）。
+      #    规范 §6 步骤 7 要求覆盖率不低于开发集水平，因此判定为未通过。
+      #    按规范禁止用测试集结果回改阈值，故保留此值不改。
+      #
+      # 结论：**自动放行保持默认关闭**（见 auto-approve-enabled）。启用它需要更大规模样本
+      # 或真实流量数据重新估计阈值；当前数据不足以支撑"自动放行"这个会改变线上状态的动作。
+      auto-approve-confidence: ${BITFORUM_MODERATION_AUTO_APPROVE_CONFIDENCE:0.99}
+      auto-approve-max-risk: ${BITFORUM_MODERATION_AUTO_APPROVE_MAX_RISK:0.01}
+    recommend:
+      # ===== M17：智能推荐 =====
+      # 排序**完全由 Java 完成**（三路召回 → RRF 融合 → Top-N），LLM 不参与选文，
+      # 只负责生成基于真实信号的推荐理由（见 task_plan.md 的 M17 实施决策）。
+      #
+      # 每一路召回各取多少条候选。三路的并集就是融合排序的候选池：
+      # 太小会让 Top-N 被单一路径垄断，太大则纯属浪费。
+      recall-top-k: ${BITFORUM_RECOMMEND_RECALL_TOP_K:20}
+      # 最终返回给前端的推荐条数
+      top-n: ${BITFORUM_RECOMMEND_TOP_N:5}
+      # RRF 的平滑常数 k：score = Σ 1/(k + rank)，取 60 是原论文的常用值。
+      # 刻意**不引入"三路权重"**配置：权重需要数据才能定，
+      # 而当前数据不足以支撑（findings.md 6.15），RRF 只用排名、不需要调参。
+      rrf-k: ${BITFORUM_RECOMMEND_RRF_K:60}
+      # 候选过滤：只排除"作者本人"与"已收藏"（M17 实施决策）。
+      # 浏览过的不排除；**已点赞本阶段不支持** —— Redis 只有 article:{id}:likes
+      # （文章 → 用户集合），没有反向索引，反查需要 SCAN 全库（findings.md 6.16）。
+      exclude-own: ${BITFORUM_RECOMMEND_EXCLUDE_OWN:true}
+      exclude-favorited: ${BITFORUM_RECOMMEND_EXCLUDE_FAVORITED:true}
+      # 生成推荐理由的模型（LLM 只写解释，不参与选文）
+      model-name: ${BITFORUM_RECOMMEND_MODEL:deepseek-flash}
+      # 推荐理由开关。关闭时推荐走"确定性排序 + 无理由"的降级路径。
+      # **离线评测必须置 false**：评测关心的是排序结果，理由会白烧额度并拖慢流程。
+      reason-enabled: ${BITFORUM_RECOMMEND_REASON_ENABLED:true}
+      # 单次最多为几条推荐生成理由；超出的条目前端按"无理由"处理
+      reason-max-articles: ${BITFORUM_RECOMMEND_REASON_MAX_ARTICLES:10}
+    analyst:
+      # ===== M17：运营分析 Agent =====
+      # 记录产生洞察的模型标识，便于换模型后识别历史数据
+      model-name: ${BITFORUM_ANALYST_MODEL:deepseek-flash}
+    usage:
+      # ===== M18：用量成本的估算口径 =====
+      # 单价（元 / 百万 token），输入与输出分开：两者量级与价格都不同，
+      # 用一个混合单价会让"长上下文问答"与"短输入长输出"看起来一样贵。
+      # 默认值按 DeepSeek 公开价格（deepseek-chat：输入 ¥2、输出 ¥8 每百万 token）填写。
+      # ⚠️ 价格会随供应商调整，这里算出来的只是**估算值**，不作为账单依据；
+      #    修改配置只影响此后写入的 ai_usage_stat 行，历史行保留当时的估算。
+      input-price-per-million: ${BITFORUM_AI_INPUT_PRICE:2.0}
+      output-price-per-million: ${BITFORUM_AI_OUTPUT_PRICE:8.0}
+    budget:
+      # ===== M18 收尾：用量预算闸门（克制版）=====
+      # 只做三件事：单用户每日预算、超预算统一降级、单次请求的输入/输出保护。
+      # **不做**：套餐/充值/余额、会员等级、分布式配额中心、动态配置后台。
+      #
+      # 数据来源是 ai_usage_stat 的"该用户 + 今天"，不新增表、不新增迁移；
+      # 判定是 soft limit：本次调用的 token 要等调用结束才落库，因此可能略微超出上限。
+      #
+      # 生效范围只有"用户主动消耗额度"的两条链路（AI 助手对话、推荐理由生成）；
+      # 内容审核（MQ）与运营洞察（管理员触发）不设闸门 —— 否则作者超额会导致内容不被审核。
+      enabled: ${BITFORUM_AI_BUDGET_ENABLED:true}
+      # 单用户每日 token 上限；<= 0 表示不限制
+      daily-token-limit: ${BITFORUM_AI_DAILY_TOKEN_LIMIT:200000}
+      # 单用户每日费用上限（元，按上面的单价估算）；<= 0 表示不限制
+      daily-cost-limit: ${BITFORUM_AI_DAILY_COST_LIMIT:2.0}
+      # 单次提问的输入长度上限（字符）；<= 0 表示不限制。
+      # S4：必须与 HTTP DTO（AiChatRequest 的 @Size(max=2000)）保持一致 ——
+      # 原先这里默认 4000，而 HTTP 入口最大只允许 2000 字符，
+      # 导致该配置在对话入口**永远不可达**，两边对"超长输入"的口径也不一致。
+      max-input-chars: ${BITFORUM_AI_MAX_INPUT_CHARS:2000}
+      # 单次回答的输出上限（token，对话链路生效）；<= 0 表示不限制
+      max-output-tokens: ${BITFORUM_AI_MAX_OUTPUT_TOKENS:1024}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+      status:
+        http-mapping:
+          down: 503
+          out-of-service: 503
+          unknown: 503

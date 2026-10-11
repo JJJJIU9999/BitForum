@@ -1,0 +1,89 @@
+spring:
+  application:
+    name: bit-forum-spring
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 8
+      minimum-idle: 1
+  servlet:
+    multipart:
+      max-file-size: 6MB
+      max-request-size: 6MB
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:127.0.0.1}
+      port: ${SPRING_DATA_REDIS_PORT:26379}
+  rabbitmq:
+    host: ${SPRING_RABBITMQ_HOST:127.0.0.1}
+    port: ${SPRING_RABBITMQ_PORT:25672}
+    # 本轮测试只从专属 runner 获得临时凭据，不读取业务 .env。
+    username: ${SPRING_RABBITMQ_USERNAME}
+    password: ${SPRING_RABBITMQ_PASSWORD}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+    listener:
+      simple:
+        acknowledge-mode: manual
+  flyway:
+    baseline-on-migrate: false
+  # ==================== Spring AI（M13 起） ====================
+  ai:
+    deepseek:
+      # starter 创建模型 bean 需要非空占位符；本轮所有测试禁止真实凭据。
+      # 初始化器在刷新前校验占位符和死端口9，开启故障注入也不会访问收费模型。
+      api-key: test-placeholder-key-not-used-for-real-calls
+      base-url: http://127.0.0.1:9
+      chat:
+        # 默认关闭真实 AI 调用：常规测试不依赖网络与真实 Key。
+        # 仅确定性故障注入可开启；收费模型类由 runner 显式跳过。
+        enabled: ${DEEPSEEK_CHAT_ENABLED:false}
+    embedding:
+      transformer:
+        # ===== M15：与 src/main/resources/application.yml 保持一致 =====
+        # 测试类路径下的 application.yml 会整体覆盖主配置（同名文件优先），因此这里必须重复一遍；
+        # 否则测试上下文会把模型缓存到系统临时目录，且模型来源与生产不一致。
+        # 模型选型依据见 findings.md 6.8（bge-base-zh-v1.5，维度 768）。
+        onnx:
+          model-uri: https://huggingface.co/Xenova/bge-base-zh-v1.5/resolve/main/onnx/model_quantized.onnx
+        tokenizer:
+          uri: https://huggingface.co/Xenova/bge-base-zh-v1.5/resolve/main/tokenizer.json
+        cache:
+          enabled: true
+          directory: ${user.home}/.cache/bitforum-onnx
+    vectorstore:
+      redis:
+        # 与主配置一致：测试同样需要建索引才能验证检索链路。
+        initialize-schema: true
+        index-name: ${BITFORUM_KB_INDEX:bitforum-finalization-tests}
+        prefix: "bitforum:kb:"
+
+jwt:
+  secret: bit-forum-test-secret-minimum-32-bytes
+  expiration: 604800000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+      status:
+        http-mapping:
+          down: 503
+          out-of-service: 503
+          unknown: 503
+
+bitforum:
+  ai:
+    recommend:
+      reason-enabled: false
+    moderation:
+      auto-approve-enabled: false
