@@ -3,6 +3,9 @@ FROM maven:3.9.9-eclipse-temurin-17 AS builder
 
 WORKDIR /app
 
+# Serial build budget; runtime JVM options are supplied by Compose.
+ENV MAVEN_OPTS="-Xms128m -Xmx768m -XX:ActiveProcessorCount=2"
+
 # 先复制 pom.xml，方便 Docker 缓存依赖下载层
 COPY pom.xml .
 COPY maven-settings.xml /root/.m2/settings.xml

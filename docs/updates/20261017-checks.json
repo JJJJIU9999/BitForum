@@ -1,0 +1,32 @@
+{
+  "date": "2026-10-17",
+  "public_base": "62d4bbb97e8182823db6963ea427d1af549f9f5f",
+  "source_commit": "641b1f08b840d35a9146b637e0a696da04036bf8",
+  "backend_unit": {
+    "classes": 32,
+    "tests": 364,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "frontend": {
+    "files": 23,
+    "passed": 246,
+    "failed": 0
+  },
+  "backend_package": "passed",
+  "frontend_build": "passed",
+  "offline_dependency_install": "passed",
+  "test_inventory": "passed; no previous test class removed or reclassified",
+  "actionlint": "passed; ShellCheck and Pyflakes not run",
+  "compose_template_render": "passed, no daemon operations",
+  "source_migrations_V1_V24": "byte identical to public base",
+  "migration_V25": "included as source only",
+  "public_ci": "byte identical to published fix",
+  "original_development_worktree": "unchanged",
+  "new_model_calls": 0,
+  "full_service_suites": "not run; pending",
+  "candidate_browser_and_deployment": "not run",
+  "remote_actions": "not run; candidate not pushed",
+  "runtime_changes": false
+}

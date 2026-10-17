@@ -77,7 +77,7 @@ function MainLayout({ currentUser, unreadCount, onLogout, children }) {
       </footer>
 
       {/* M13 AI 助手：仅登录用户可见，接口本身也要求登录 */}
-      {isLoggedIn && <AiAssistantPanel />}
+      {isLoggedIn && <AiAssistantPanel key={currentUser.userId} userId={currentUser.userId} />}
     </div>
   )
 }

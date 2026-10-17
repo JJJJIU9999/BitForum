@@ -1,6 +1,6 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter } from 'react-router'
+import { createBrowserRouter, RouterProvider } from 'react-router'
 import App from './App.jsx'
 import './styles/variables.css'
 import './styles/layout.css'
@@ -9,10 +9,10 @@ import './styles/ai-trace.css'
 import './style.css'
 import './styles/topics.css'
 
+const router = createBrowserRouter([{ path: '*', element: <App /> }])
+
 createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <RouterProvider router={router} />
   </React.StrictMode>,
 )

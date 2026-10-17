@@ -105,6 +105,8 @@ def main():
             env.pop(key)
     env.update(BITFORUM_ISOLATED_TESTS="true", DEEPSEEK_CHAT_ENABLED="false",
         BITFORUM_RECOMMEND_REASON_ENABLED="false", BITFORUM_MODERATION_AUTO_APPROVE="false",
+        BITFORUM_QA_TOOLS_ENABLED="false", BITFORUM_MODERATION_MODEL_ENABLED="false",
+        BITFORUM_ANALYST_MODEL_ENABLED="false", BITFORUM_QA_ALLOW_WRITE_TOOLS="false",
         M18_E2E_OBSERVATION="false", SPRING_DATA_REDIS_HOST="127.0.0.1", SPRING_DATA_REDIS_PORT="26379",
         SPRING_RABBITMQ_HOST="127.0.0.1", SPRING_RABBITMQ_PORT="25672", SPRING_DATASOURCE_USERNAME="root")
     for key in list(env):
@@ -176,7 +178,8 @@ def main():
             group_env = env.copy()
             db = "bitforum_" + group + "_test" if group in ("cm22","cm23","cm24") else "bitforum_finalization_test"
             group_env["SPRING_DATASOURCE_URL"] = "jdbc:mysql://127.0.0.1:23306/" + db + "?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8"
-            group_env["SPRING_FLYWAY_TARGET"] = "23" if group in ("cm22","cm23") else "24"
+            # Current entities require V25; historical migration suites pin their own targets.
+            group_env["SPRING_FLYWAY_TARGET"] = "25"
             group_env["BITFORUM_KB_INDEX"] = "bitforum-finalization-" + group
             if group in ("cm22","cm23","cm24"):
                 group_env[group.upper() + "_ISOLATED_TESTS"] = "true"

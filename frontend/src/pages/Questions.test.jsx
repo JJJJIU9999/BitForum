@@ -119,7 +119,7 @@ describe('提问表单', () => {
     fireEvent.change(screen.getByLabelText('问题标题'), { target: { value: '为什么线程阻塞？' } })
     fireEvent.change(screen.getByLabelText('问题描述'), { target: { value: '已检查锁与线程日志' } })
     fireEvent.click(screen.getByRole('button', { name: '提交审核' }))
-    await waitFor(() => expect(publishArticle).toHaveBeenCalledWith({ title: '为什么线程阻塞？', content: '已检查锁与线程日志', categoryId: 2, coverImageId: null, contentType: 'QUESTION' }))
+    await waitFor(() => expect(publishArticle).toHaveBeenCalledWith({ title: '为什么线程阻塞？', content: '已检查锁与线程日志', categoryId: 2, coverImageId: null, contentType: 'QUESTION', contentFormat: 'MARKDOWN' }))
   })
 
   it('旧投稿入口默认 ARTICLE，切换问题后保存 QUESTION 草稿', async () => {

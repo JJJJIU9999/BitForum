@@ -44,7 +44,8 @@
 .admin-topbar .eyebrow { margin-bottom: 2px; }
 .admin-topbar strong { color: #24392e; font-size: 18px; }
 .admin-body { padding: 38px 42px 60px; }
-.admin-content-container { width: min(100%, 1260px); }
+.admin-content-container { width: 100%; min-width: 0; }
+.admin-content-container > .content-view { width: 100%; max-width: none; }
 .admin-menu-button, .admin-close-button, .admin-drawer-scrim { display: none; }
 
 @media (max-width: 760px) {

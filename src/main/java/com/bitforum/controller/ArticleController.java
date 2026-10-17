@@ -80,7 +80,7 @@ public class ArticleController {
                     request.getContent(),
                     request.getCategoryId(),
                     userId,
-                    request.getCoverImageId(), request.getContentType());
+                    request.getCoverImageId(), request.getContentType(), request.getContentFormat());
             return Result.ok("提交审核成功", null);
         } catch (BusinessException e) {
             return Result.fail(e.getCode(), e.getMessage());
@@ -99,7 +99,7 @@ public class ArticleController {
                     request.getContent(),
                     request.getCategoryId(),
                     userId,
-                    request.getCoverImageId(), request.getContentType());
+                    request.getCoverImageId(), request.getContentType(), request.getContentFormat());
             return Result.ok("草稿保存成功", article);
         } catch (BusinessException e) {
             return Result.fail(e.getCode(), e.getMessage());
@@ -119,7 +119,7 @@ public class ArticleController {
                     request.getTitle(),
                     request.getContent(),
                     request.getCategoryId(),
-                    request.getCoverImageId());
+                    request.getCoverImageId(), request.getContentFormat());
             return Result.ok("草稿更新成功", null);
         } catch (BusinessException e) {
             return Result.fail(e.getCode(), e.getMessage());
@@ -180,7 +180,7 @@ public class ArticleController {
                     request.getArticleId(),
                     request.getTitle(),
                     request.getContent(),
-                    request.getCoverImageId());
+                    request.getCoverImageId(), request.getContentFormat());
             return Result.ok("更改文章成功", null);
         } catch (BusinessException e) {
             return Result.fail(e.getCode(), e.getMessage());

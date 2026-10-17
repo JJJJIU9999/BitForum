@@ -113,19 +113,22 @@ public class AnalystAgent {
     private final String modelName;
     private final TraceRecorder traceRecorder;
     private final AiDegradeGuard degradeGuard;
+    private final boolean modelEnabled;
 
     public AnalystAgent(ObjectProvider<ChatClient> chatClientProvider,
                         AdminDashboardService dashboardService,
                         ObjectMapper objectMapper,
                         @Value("${bitforum.ai.analyst.model-name:deepseek-flash}") String modelName,
                         TraceRecorder traceRecorder,
-                        AiDegradeGuard degradeGuard) {
+                        AiDegradeGuard degradeGuard,
+            @Value("${bitforum.ai.analyst.model-enabled:true}") boolean modelEnabled) {
         this.chatClientProvider = chatClientProvider;
         this.dashboardService = dashboardService;
         this.objectMapper = objectMapper;
         this.modelName = modelName;
         this.traceRecorder = traceRecorder;
         this.degradeGuard = degradeGuard;
+        this.modelEnabled = modelEnabled;
     }
 
     /**
@@ -162,7 +165,7 @@ public class AnalystAgent {
         }
 
         // 2. 模型不可用时仍然保留快照：统计是本地算的，与 AI 是否可用无关
-        ChatClient chatClient = chatClientProvider.getIfAvailable();
+        ChatClient chatClient = modelEnabled ? chatClientProvider.getIfAvailable() : null;
         if (chatClient == null) {
             log.debug("ChatClient 不可用，运营洞察走降级");
             return InsightOutcome.degraded(TraceDegradeReason.AI_DISABLED, snapshot, dataTime, modelName,

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Camera, FileText, Flag, Heart, Save, Upload } from 'lucide-react'
+import { Save, Upload } from 'lucide-react'
 import { Link, useNavigate, useOutletContext, useParams } from 'react-router'
-import { pageMyArticles, pageMyFavorites, submitArticle, updateArticle } from '../api/articleApi.js'
+import { pageMyArticles, pageMyFavorites } from '../api/articleApi.js'
 import { pageMyReports } from '../api/reportApi.js'
 import { getCurrentUserProfile, updateCurrentUserProfile } from '../api/userApi.js'
-import { uploadArticleCover, uploadAvatar } from '../api/uploadApi.js'
+import { uploadAvatar } from '../api/uploadApi.js'
 import AccountNav, { ACCOUNT_TABS } from '../components/AccountNav.jsx'
 import PageHeader from '../components/PageHeader.jsx'
 import ArticleCard from '../components/ArticleCard.jsx'
@@ -30,8 +30,6 @@ function MyArticles() {
   const [profileForm, setProfileForm] = useState({ nickname: '', bio: '' })
   const [avatarFile, setAvatarFile] = useState(null)
   const [avatarInputKey, setAvatarInputKey] = useState(0)
-  const [coverEdits, setCoverEdits] = useState({})
-  const [coverFiles, setCoverFiles] = useState({})
   const [pageInfo, setPageInfo] = useState({ current: 1, pages: 1, total: 0 })
   const [pageNum, setPageNum] = useState(1)
   const [status, setStatus] = useState('')
@@ -58,7 +56,6 @@ function MyArticles() {
         const result = activeTab === 'favorites' ? await pageMyFavorites(params) : activeTab === 'reports' ? await pageMyReports(params) : await pageMyArticles(params)
         const nextRecords = result.data.records || []
         setRecords(nextRecords)
-        if (activeTab === 'articles') setCoverEdits(Object.fromEntries(nextRecords.map((article) => [article.id, article.coverImageId || null])))
         setPageInfo({ current: result.data.current, pages: result.data.pages, total: result.data.total })
       } catch (error) {
         setRecords([])
@@ -103,48 +100,7 @@ function MyArticles() {
     } finally { setBusyId(null) }
   }
 
-  async function uploadCover(articleId) {
-    const file = coverFiles[articleId]
-    if (!file) return
-    setBusyId(`upload-${articleId}`)
-    try {
-      const result = await uploadArticleCover(file)
-      setCoverEdits((current) => ({ ...current, [articleId]: result.data.id }))
-      setCoverFiles((current) => ({ ...current, [articleId]: null }))
-      setMessage(`文章 #${articleId} 封面已上传，待人工审核；请保存资源选择。`)
-      setMessageType('info')
-    } catch (error) {
-      setMessage(error.message)
-      setMessageType('error')
-    } finally { setBusyId(null) }
-  }
-
-  async function saveCover(article) {
-    setBusyId(`save-${article.id}`)
-    try {
-      await updateArticle({ articleId: article.id, title: article.title, content: article.content, coverImageId: coverEdits[article.id] || null })
-      setMessage(`文章 #${article.id} 封面已保存。`)
-      setMessageType('info')
-    } catch (error) {
-      setMessage(error.message)
-      setMessageType('error')
-    } finally { setBusyId(null) }
-  }
-
-  async function submitForAudit(articleId) {
-    setBusyId(`submit-${articleId}`)
-    try {
-      await submitArticle(articleId)
-      setRecords((current) => current.map((article) => article.id === articleId ? { ...article, status: 'PENDING' } : article))
-      setMessage(`文章 #${articleId} 已提交审核。`)
-      setMessageType('info')
-    } catch (error) {
-      setMessage(error.message)
-      setMessageType('error')
-    } finally { setBusyId(null) }
-  }
-
-  const labels = { profile: ['个人资料', '维护头像、昵称与个人简介。'], articles: ['我的文章', '管理草稿、审核状态和文章封面。'], favorites: ['我的收藏', '这里保留仍处于公开状态的收藏文章。'], reports: ['我的举报', '查看你提交过的内容举报及处理状态。'] }
+  const labels = { profile: ['个人资料', '维护头像、昵称与个人简介。'], articles: ['我的文章', '继续编辑草稿或被驳回内容，查看审核状态。'], favorites: ['我的收藏', '这里保留仍处于公开状态的收藏文章。'], reports: ['我的举报', '查看你提交过的内容举报及处理状态。'] }
 
   return (
     <div className="account-layout">
@@ -159,7 +115,7 @@ function MyArticles() {
 
         {activeTab === 'reports' && <div className="report-list">{records.map((report) => <article className="report-card" key={report.id}><div><p className="article-card-kicker">{TARGET_TYPE_LABELS[report.targetType] || report.targetType} #{report.targetId}</p><h2>{report.reason}</h2><p>{report.handleResult || '管理员尚未填写处理说明。'}</p></div><StatusBadge status={report.status} label={REPORT_STATUS_LABELS[report.status]} /></article>)}{!loading && records.length === 0 && <EmptyState />}</div>}
 
-        {(activeTab === 'articles' || activeTab === 'favorites') && <div className="article-list">{records.map((article) => <ArticleCard key={article.id} variant={activeTab === 'favorites' ? 'favorite' : 'owned'} article={article} onOpen={(id) => navigate(`/articles/${id}`)} statusLabel={activeTab === 'favorites' ? '已收藏' : undefined}>{activeTab === 'articles' && (article.status === 'DRAFT' || article.status === 'REJECTED') && <details className="article-editor"><summary>编辑封面与审核状态</summary>{coverEdits[article.id] && <div className="pending-image-hint"><PrivateImagePreview imageId={coverEdits[article.id]} alt="封面预览" className="pending-image-preview" /><span role="status">封面资源 #{coverEdits[article.id]}，需人工通过后公开。</span></div>}<div className="file-upload-row"><label className="file-picker">选择封面<input accept="image/jpeg,image/png,image/webp" type="file" onChange={(event) => setCoverFiles((current) => ({ ...current, [article.id]: event.target.files?.[0] || null }))} /></label><button className="ghost-button" disabled={!coverFiles[article.id] || busyId === `upload-${article.id}`} type="button" onClick={() => uploadCover(article.id)}>{busyId === `upload-${article.id}` ? '上传中…' : '上传封面'}</button></div><div className="form-action-row"><button className="ghost-button" disabled={busyId === `save-${article.id}`} type="button" onClick={() => saveCover(article)}>{busyId === `save-${article.id}` ? '保存中…' : '保存封面'}</button><button className="primary-button" disabled={busyId === `submit-${article.id}`} type="button" onClick={() => submitForAudit(article.id)}>{busyId === `submit-${article.id}` ? '提交中…' : '提交审核'}</button></div></details>}</ArticleCard>)}{!loading && records.length === 0 && <EmptyState />}</div>}
+        {(activeTab === 'articles' || activeTab === 'favorites') && <div className="article-list">{records.map((article) => <ArticleCard key={article.id} variant={activeTab === 'favorites' ? 'favorite' : 'owned'} article={article} onOpen={(id) => navigate(`/articles/${id}`)} statusLabel={activeTab === 'favorites' ? '已收藏' : undefined}>{activeTab === 'articles' && String(article.userId) === String(currentUser?.userId ?? currentUser?.id) && (article.status === 'DRAFT' || article.status === 'REJECTED') && <Link className="primary-button inline-button" to={`/articles/${article.id}/edit`}>继续编辑</Link>}</ArticleCard>)}{!loading && records.length === 0 && <EmptyState />}</div>}
         {activeTab !== 'profile' && pageInfo.total > 0 && <Pagination pageInfo={pageInfo} onPageChange={setPageNum} loading={loading} />}
       </section>
     </div>

@@ -2,8 +2,10 @@ package com.bitforum.ai.agent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.bitforum.ai.degrade.AiDegradeGuard;
+import com.bitforum.ai.rag.Citation;
 import com.bitforum.ai.rag.RagService;
 import com.bitforum.ai.tool.AgentContextKeys;
 import com.bitforum.ai.tool.ArticleTools;
@@ -125,6 +128,7 @@ public class QaAgent implements Agent {
      * 会重新暴露"检索文本诱导模型执行写操作"的风险，绝不能在答辩演示之外开启。
      */
     private final boolean allowWriteTools;
+    private final boolean toolsEnabled;
 
     public QaAgent(ObjectProvider<ChatClient> chatClientProvider,
                    ArticleTools articleTools,
@@ -133,7 +137,8 @@ public class QaAgent implements Agent {
                    TraceRecorder traceRecorder,
                    AiDegradeGuard degradeGuard,
                    @Value("${bitforum.ai.budget.max-output-tokens:1024}") int maxOutputTokens,
-                   @Value("${bitforum.ai.qa.allow-write-tools:false}") boolean allowWriteTools) {
+                   @Value("${bitforum.ai.qa.allow-write-tools:false}") boolean allowWriteTools,
+                   @Value("${bitforum.ai.qa.tools-enabled:true}") boolean toolsEnabled) {
         this.chatClientProvider = chatClientProvider;
         this.articleTools = articleTools;
         this.interactionTools = interactionTools;
@@ -142,6 +147,29 @@ public class QaAgent implements Agent {
         this.degradeGuard = degradeGuard;
         this.maxOutputTokens = maxOutputTokens;
         this.allowWriteTools = allowWriteTools;
+        this.toolsEnabled = toolsEnabled;
+    }
+
+    /** 内部模型输出协议；API 与持久化仍然只有正文和既有 citations。 */
+    public record GroundedAnswer(String answer, boolean usesSources, List<Integer> sourceNumbers) {}
+
+    private String chatOnlyPrompt() {
+        int start = SYSTEM_PROMPT.indexOf("3. 需要更完整");
+        int end = SYSTEM_PROMPT.indexOf("4. 写操作");
+        return (SYSTEM_PROMPT.substring(0, start)
+                + "3. 当前只开放多轮技术问答和给定的公开文章片段；没有实时查询工具。"
+                + "没有相关依据时明确说明，不编造文章、来源或实时数据。\n\n"
+                + SYSTEM_PROMPT.substring(end))
+                .replace("但涉及具体数据仍需用工具查询", "但具体数据必须以本轮提供的公开片段为依据")
+                + """
+
+                本轮通过结构化结果返回：answer 是给用户看的 Markdown 正文。
+                usesSources 只有在正文结论确实由本轮公开片段支持时才为 true；
+                sourceNumbers 只列作为结论依据的本轮片段编号，不列仅提及或排除的候选。
+                通用技术回答、没有站内依据、解释为什么候选不相关时，usesSources 必须为 false，
+                sourceNumbers 必须为空。此时正文也不要标注无关片段编号。
+                不能将上轮片段的编号套用到本轮；本轮没有支持资料时如实说明。
+                """;
     }
 
     @Override
@@ -164,7 +192,7 @@ public class QaAgent implements Agent {
         RagService.RetrievalResult retrieval = retrieveSafely(context.userMessage(), retrieveStartedAt);
 
         List<Message> messages = new ArrayList<>();
-        messages.add(new SystemMessage(SYSTEM_PROMPT));
+        messages.add(new SystemMessage(toolsEnabled ? SYSTEM_PROMPT : chatOnlyPrompt()));
         // 检索片段只作为本轮上下文，不写入会话记忆（记忆里只有用户与助手的真实消息），
         // 因此不会随轮次累积、也不会污染后续对话。
         if (history != null) {
@@ -178,8 +206,8 @@ public class QaAgent implements Agent {
             // M18：这里不再直接把工具对象交给 ChatClient，而是先包装成"带轨迹采集"的回调 ——
             // T12 实测确认工具执行循环在 provider 内部完成，业务可见的最终响应里没有工具链，
             // 唯一能记录「工具名 / 入参 / 返回值 / 单步耗时」的位置就是这层包装。
-            Object[] tools = ToolRegistry.toolsFor(type(), articleTools, interactionTools);
-            ToolCallback[] toolCallbacks = traceRecorder.wrapTools(tools);
+            Object[] tools = toolsEnabled ? ToolRegistry.toolsFor(type(), articleTools, interactionTools) : new Object[0];
+            ToolCallback[] toolCallbacks = toolsEnabled ? traceRecorder.wrapTools(tools) : new ToolCallback[0];
             if (!allowWriteTools) {
                 // M1：默认把写工具从模型可见列表中摘掉。
                 // 顺序刻意是"先包装、后过滤"：否则写工具仍会出现在模型拿到的工具 schema 里，
@@ -191,7 +219,7 @@ public class QaAgent implements Agent {
                     log.debug("M1 写工具已从模型可见列表移除：scene={}，可见 {} / 原有 {}",
                             context.conversationId(), toolCallbacks.length, before);
                 }
-            } else {
+            } else if (toolsEnabled) {
                 // 实验能力（bitforum.ai.qa.allow-write-tools=true）：写工具重新暴露给模型。
                 // 这里没有服务端二次确认令牌，**不能当作生产可用的授权机制**，属于已知技术债。
                 log.warn("M1 写工具已对模型开放（bitforum.ai.qa.allow-write-tools=true）："
@@ -218,12 +246,23 @@ public class QaAgent implements Agent {
             }
 
             long llmStartedAt = System.currentTimeMillis();
-            ChatResponse response = requestSpec.call().chatResponse();
+            ChatResponse response;
+            GroundedAnswer declared = null;
+            if (toolsEnabled) {
+                // 保留已有工具模式契约；当前本机 demo 明确关闭工具。
+                response = requestSpec.call().chatResponse();
+            } else {
+                // 复用审核 Agent 已使用的结构化转换；只发一次请求，不做模型修复重试。
+                var result = requestSpec.call().responseEntity(GroundedAnswer.class);
+                response = result == null ? null : result.response();
+                declared = result == null ? null : result.entity();
+            }
             traceRecorder.stepSince(TraceStepType.LLM_CALL, modelName(response),
                     "prompt=" + promptTokens(response) + ", completion=" + completionTokens(response),
                     llmStartedAt, totalTokens(response));
 
-            String content = response == null || response.getResult() == null
+            String content = !toolsEnabled ? (declared == null ? "" : declared.answer())
+                    : response == null || response.getResult() == null
                     || response.getResult().getOutput() == null
                             ? ""
                             : response.getResult().getOutput().getText();
@@ -233,9 +272,10 @@ public class QaAgent implements Agent {
                 return AgentResponse.degraded(degradeGuard.degrade(TraceDegradeReason.EMPTY_RESPONSE));
             }
 
-            // 引用来源独立于模型输出：即使模型忘记标注编号，前端仍能展示可点击的原帖链接
+            // 只展示回答实际标注且存在于本轮公开片段中的来源，不能把召回候选冒充引用。
             return AgentResponse.of(content, promptTokens(response),
-                    completionTokens(response), totalTokens(response), retrieval.citations());
+                    completionTokens(response), totalTokens(response), toolsEnabled ? usedCitations(content, retrieval.chunks())
+                            : declaredCitations(declared, retrieval.chunks()));
         } catch (RuntimeException e) {
             // 大模型不可用（网络、额度、限流）不应影响论坛其他功能。
             // 异常分类（超时 / 其它）由 Guard 统一判定，这里不再各写一套字符串判断
@@ -243,6 +283,33 @@ public class QaAgent implements Agent {
             return AgentResponse.degraded(
                     degradeGuard.degrade(degradeGuard.classify(e), e.getMessage()));
         }
+    }
+
+    static List<Citation> declaredCitations(GroundedAnswer answer, List<RagService.RetrievedChunk> chunks) {
+        if (answer == null || !answer.usesSources() || answer.sourceNumbers() == null) {
+            return List.of();
+        }
+        var citations = new LinkedHashMap<Long, Citation>();
+        for (Integer number : answer.sourceNumbers()) {
+            if (number != null && number > 0 && number <= chunks.size()) {
+                Citation citation = chunks.get(number - 1).citation();
+                citations.putIfAbsent(citation.articleId(), citation);
+            }
+        }
+        return List.copyOf(citations.values());
+    }
+
+    static List<Citation> usedCitations(String content, List<RagService.RetrievedChunk> chunks) {
+        var citations = new LinkedHashMap<Long, Citation>();
+        var matches = Pattern.compile("\\[(\\d{1,3})\\]").matcher(content);
+        while (matches.find()) {
+            int index = Integer.parseInt(matches.group(1)) - 1;
+            if (index >= 0 && index < chunks.size()) {
+                Citation citation = chunks.get(index).citation();
+                citations.putIfAbsent(citation.articleId(), citation);
+            }
+        }
+        return List.copyOf(citations.values());
     }
 
     /** 检索失败时退化为空结果，让对话继续走无检索路径。 */

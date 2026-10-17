@@ -99,6 +99,19 @@ describe('ArticleDetail 操作区', () => {
     cleanup()
   })
 
+  it('renders opted-in Markdown using the same body as preview; legacy remains literal', async () => {
+    getArticleDetail.mockResolvedValue({ data: baseArticle({ content: '# 格式标题\n\n```java\nint n = 1;\n```', contentFormat: 'MARKDOWN' }) })
+    const view = render(<ArticleDetail />)
+    expect(await screen.findByRole('heading', { name: '格式标题' })).toBeTruthy()
+    expect(view.container.querySelector('pre code').textContent).toBe('int n = 1;')
+    view.unmount()
+    getArticleDetail.mockResolvedValue({ data: baseArticle({ content: '# 原文\n**保留**' }) })
+    const legacy = render(<ArticleDetail />)
+    await screen.findByText('Redis 缓存穿透实践')
+    expect(legacy.container.querySelector('.article-body').textContent).toBe('# 原文\n**保留**')
+    expect(legacy.container.querySelector('.article-body strong')).toBeNull()
+  })
+
   it('likes the article when it is not liked yet', async () => {
     await renderDetail()
 

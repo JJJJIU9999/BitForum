@@ -42,7 +42,7 @@ describe('AiInsightCard', () => {
 
     expect(await screen.findByText(/社区目前共有 43 位用户/)).toBeTruthy()
     // 报告是"生成那一刻"的快照，不是实时数据：这句话必须在正文之前被读到
-    const meta = screen.getByText(/数据快照生成于 2026-09-19 15:29/)
+    const meta = screen.getByText(/数据快照生成于 2026-09-19 23:29/)
     expect(meta.textContent).toContain('非实时数据')
     expect(meta.textContent).toContain('deepseek-flash')
     expect(meta.textContent).toContain('耗时 5004 ms')

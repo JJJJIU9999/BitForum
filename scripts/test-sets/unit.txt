@@ -2,9 +2,12 @@
 **/AiInsightGenerationServiceTest.java
 **/AiInsightServiceTest.java
 **/AnalystAgentTest.java
+**/AiModelSwitchTest.java
+**/DeepSeekClientConfigTest.java
 **/AiDegradeGuardTest.java
 **/ModerationMessageListenerTest.java
 **/ModerationServiceTest.java
+**/ChatSafetyTest.java
 **/ArticleChunkingServiceTest.java
 **/KbIndexMessageListenerTest.java
 **/RagServiceIndexStatusFilterTest.java
@@ -15,9 +18,12 @@
 **/ToolRegistryTest.java
 **/AiTokenBudgetGuardTest.java
 **/AiUsageRecorderTest.java
+**/UtcTimeConfigTest.java
 **/AdminDashboardControllerTest.java
+**/ArticleContentFormatContractTest.java
 **/CoreApiExceptionContractTest.java
 **/AdminHealthServiceTest.java
+**/ArticleContentFormatTest.java
 **/FileUploadServiceTest.java
 **/FollowFeedCursorTest.java
 **/NotificationListenerTest.java
