@@ -2,11 +2,21 @@
 
 适用于新建、空数据库和合成数据。Java17、Node22、Maven Wrapper、MySQL8、Redis Stack、RabbitMQ；后端/前端依赖版本按现有pom及package-lock，不自动升级。
 
-1. 在新目录/专属Compose项目中使用.env.example生成私有.env，替换数据库、MQ和JWT占位值。没有收费模型调用时保留非空disabled-placeholder模型占位符并保持全部AI/写工具开关false，不能使用真实API key进行本轮验证。
+1. 在新目录/专属Compose项目中使用.env.example生成私有.env，替换数据库、MQ和JWT占位值。没有收费模型调用时保留非空disabled-placeholder模型占位符并保持示例全部收费能力和模型工具开关false，不能使用真实API key进行本轮验证。
 2. 检查端口冲突、项目名、卷归属和目标库，确认该环境独立；现有业务/演示环境升级需另行批准。模板Compose仅作为配置，不自动部署。
-3. 空库首次Flyway执行V1–V24；必须实际回读flyway_schema_history确认版本。禁止为运行示例清理、repair或迁移现有数据库。
+3. 空库首次Flyway执行V1–V25；必须实际回读flyway_schema_history确认版本。禁止为运行示例清理、repair或迁移现有数据库。
 4. 前端/api经代理访问后端；健康、登录、公开列表需实际核验后再演示。已有ONNX缓存可复用只读模型文件，首次缓存可能下载。
 
 默认测试 `./mvnw -s maven-settings.xml test` 不需要启动基础服务。完整测试使用[独立测试机制](testing.md)的专属端口与数据库，不能加载业务.env。
 
 可选HTTPS模板和证书工具保持在源码中，本候选不生成信任、不安装证书、不跨设备部署。
+
+## 当前候选与本机已有环境
+
+源码现含 V25 `content_format`，默认 `PLAIN_TEXT`，不改写旧正文。作者可在新内容或编辑时显式选择 Markdown；预览和详情复用渲染器。只有已有环境另行批准升级后才运行迁移，不能用本说明默认启动已有数据库。
+
+当前 Compose 示例的五服务上限合计 2560 MiB，构建串行使用受限 JVM / Node 内存。本机已有 demo 的端口、Navicat 13306、密钥和管理守卫留在仓库外，本次整理没有替换它们。示例仍是通用空环境模板，不包含可直接复用的本机账号或运行数据。
+
+仅启用聊天时，在私有 `.env` 中配置受控密钥并显式设置 `DEEPSEEK_CHAT_ENABLED=true`；其余收费能力、模型工具和写工具保持 `false`。官方地址由 `DEEPSEEK_BASE_URL` 配置，专属客户端追加 `thinking.type=disabled`，输入 2000 字符、输出 1024 token，连接 5 秒、读取 40 秒、前端 60 秒。模型和 JDK POST 不自动重试。
+
+失败后先核对服务端历史；末尾未回答或发送状态不明的会话暂停继续发送，可使用“核对历史”只读确认，不自动续发。模型供应商账单与本地费用估算不同；默认每天每用户 2 元为估算软额度，按后端 UTC 自然日累计。

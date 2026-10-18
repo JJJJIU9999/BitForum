@@ -1,6 +1,6 @@
 # 系统架构（源码视图）
 
-对应V24源码的单机架构；不是实时部署拓扑。单机单体，收费 AI 为可选依赖，本轮关闭。
+对应当前V25候选源码的单机架构；不是实时部署拓扑。单机单体，收费 AI 为可选依赖，本轮关闭。
 
 ```mermaid
 flowchart LR
@@ -8,7 +8,7 @@ flowchart LR
     MVC --> Service[社区与治理 Service]
     MVC --> AI[AI 会话 / Agent 路由]
     Service --> SQL[MyBatis-Plus]
-    SQL --> MySQL[(MySQL 8 / Flyway V1–V24)]
+    SQL --> MySQL[(MySQL 8 / Flyway V1–V25)]
     Service --> Redis[(Redis Stack 指标与热度)]
     Service --> Files[本地私有 / 公开图片文件]
     Service --> MQ[(RabbitMQ)]

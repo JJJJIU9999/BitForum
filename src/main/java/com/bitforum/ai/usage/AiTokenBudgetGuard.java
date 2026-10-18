@@ -31,13 +31,12 @@ import com.bitforum.ai.trace.TraceDegradeReason;
  * 内容审核（MQ 异步、影响治理公平性）与运营洞察（管理员触发）**不设预算闸门** ——
  * 让"作者超额"导致内容不被审核，是拿治理正确性换成本，不划算。
  *
- * <p><b>两个有意的软边界</b>：
+ * <p><b>预算边界</b>：
  * <ul>
  *   <li>判定基于"今天已写入的用量"，而当前这次调用的 token 要等调用结束才落库，
  *       因此实际用量可能略微超出上限（soft limit）。要做到硬上限需要预扣额度，
  *       那属于"配额中心"的范畴，本轮明确不做。</li>
- *   <li>查询失败时**放行**（fail-open）：预算组件自身的故障不应该让用户完全用不了 AI，
- *       这与"AI 不可用不能影响论坛主流程"是同一条原则。</li>
+ *   <li>查询失败时停止外部调用；论坛非 AI 主流程不受影响。</li>
  * </ul>
  */
 @Service
@@ -101,9 +100,9 @@ public class AiTokenBudgetGuard {
         try {
             usage = usageMapper.selectUserDaily(userId, LocalDate.now());
         } catch (RuntimeException exception) {
-            // fail-open：预算查询失败不能变成"所有人都用不了 AI"
-            log.warn("AI 预算查询失败，本次放行：userId={}", userId, exception);
-            return BudgetDecision.allow();
+            // 无法核对已用额度时不得继续产生外部费用。
+            log.warn("AI 预算查询失败，本次阻断：userId={}", userId);
+            return BudgetDecision.deny(TraceDegradeReason.BUDGET_UNAVAILABLE, "无法核对今日用量，未调用模型");
         }
         long tokens = usage == null || usage.getTotalTokens() == null ? 0L : usage.getTotalTokens();
         BigDecimal cost = usage == null || usage.getCost() == null ? BigDecimal.ZERO : usage.getCost();

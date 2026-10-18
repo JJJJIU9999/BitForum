@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link, Navigate, Outlet, Route, Routes, useLocation, useNavigate, useOutletContext } from 'react-router'
 import MainLayout from './layouts/MainLayout.jsx'
 import AdminLayout from './layouts/AdminLayout.jsx'
@@ -7,6 +7,7 @@ import Register from './pages/Register.jsx'
 import ArticleList from './pages/ArticleList.jsx'
 import ArticleDetail from './pages/ArticleDetail.jsx'
 import PublishArticle from './pages/PublishArticle.jsx'
+import EditArticle from './pages/EditArticle.jsx'
 import MyArticles from './pages/MyArticles.jsx'
 import PublicUserProfile from './pages/PublicUserProfile.jsx'
 import NotificationCenter from './pages/NotificationCenter.jsx'
@@ -88,6 +89,7 @@ function App() {
           <Route path="following" element={<FollowFeed />} />
           <Route path="me/topics" element={<MyTopics />} />
           <Route path="publish" element={<PublishArticle />} />
+          <Route path="articles/:articleId/edit" element={<EditArticle />} />
           <Route path="notifications" element={<NotificationCenter />} />
           <Route path="me/:tab" element={<MyArticles />} />
           <Route path="me" element={<Navigate to="/me/profile" replace />} />
@@ -119,11 +121,20 @@ function App() {
 
 function PublicShell({ currentUser, setCurrentUser, unreadCount, refreshUnreadCount }) {
   const navigate = useNavigate()
+  const logoutGuardRef = useRef(null)
+  const registerLogoutGuard = useCallback((guard) => {
+    logoutGuardRef.current = guard
+    return () => { if (logoutGuardRef.current === guard) logoutGuardRef.current = null }
+  }, [])
 
   function handleLogout() {
-    clearAuth()
-    setCurrentUser(null)
-    navigate('/login')
+    const logout = () => {
+      clearAuth()
+      setCurrentUser(null)
+      navigate('/login')
+    }
+    if (logoutGuardRef.current) logoutGuardRef.current(logout)
+    else logout()
   }
 
   return (
@@ -132,7 +143,7 @@ function PublicShell({ currentUser, setCurrentUser, unreadCount, refreshUnreadCo
       unreadCount={unreadCount}
       onLogout={handleLogout}
     >
-      <Outlet context={{ currentUser, setCurrentUser, refreshUnreadCount }} />
+      <Outlet context={{ currentUser, setCurrentUser, refreshUnreadCount, registerLogoutGuard }} />
     </MainLayout>
   )
 }

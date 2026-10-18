@@ -43,6 +43,9 @@ import com.bitforum.message.ModerationMessage;
 
 @Service
 public class ArticleService {
+    public static final String FORMAT_PLAIN_TEXT = "PLAIN_TEXT";
+    public static final String FORMAT_MARKDOWN = "MARKDOWN";
+
     public static final String TYPE_ARTICLE = "ARTICLE";
     public static final String TYPE_QUESTION = "QUESTION";
 
@@ -103,7 +106,12 @@ public class ArticleService {
 
     @Transactional
     public void publishWithCoverId(String title, String content, Long categoryId, Long userId, Long coverImageId, String contentType) {
-        createArticle(title, content, categoryId, userId, STATUS_PENDING, coverImageId, contentType);
+        publishWithCoverId(title, content, categoryId, userId, coverImageId, contentType, null);
+    }
+
+    @Transactional
+    public void publishWithCoverId(String title, String content, Long categoryId, Long userId, Long coverImageId, String contentType, String contentFormat) {
+        createArticle(title, content, categoryId, userId, STATUS_PENDING, coverImageId, contentType, contentFormat);
         log.info("文章已提交审核");
     }
 
@@ -125,7 +133,12 @@ public class ArticleService {
 
     @Transactional
     public Article saveDraftWithCoverId(String title, String content, Long categoryId, Long userId, Long coverImageId, String contentType) {
-        return createArticle(title, content, categoryId, userId, STATUS_DRAFT, coverImageId, contentType);
+        return saveDraftWithCoverId(title, content, categoryId, userId, coverImageId, contentType, null);
+    }
+
+    @Transactional
+    public Article saveDraftWithCoverId(String title, String content, Long categoryId, Long userId, Long coverImageId, String contentType, String contentFormat) {
+        return createArticle(title, content, categoryId, userId, STATUS_DRAFT, coverImageId, contentType, contentFormat);
     }
 
     @Transactional
@@ -141,6 +154,11 @@ public class ArticleService {
 
     @Transactional
     public void updateDraftWithCoverId(Long userId, Long articleId, String title, String content, Long categoryId, Long coverImageId) {
+        updateDraftWithCoverId(userId, articleId, title, content, categoryId, coverImageId, null);
+    }
+
+    @Transactional
+    public void updateDraftWithCoverId(Long userId, Long articleId, String title, String content, Long categoryId, Long coverImageId, String contentFormat) {
         Article article = findOwnedArticle(userId, articleId);
         if (!STATUS_DRAFT.equals(article.getStatus()) && !STATUS_REJECTED.equals(article.getStatus())) {
             throw new BusinessException("只能修改草稿或被驳回文章");
@@ -150,6 +168,7 @@ public class ArticleService {
             throw new BusinessException("板块不存在或已禁用");
         }
 
+        article.setContentFormat(validateContentFormat(contentFormat == null ? article.getContentFormat() : contentFormat));
         article.setTitle(title);
         article.setContent(content);
         bindCover(article, userId, coverImageId);
@@ -413,6 +432,11 @@ public class ArticleService {
 
     @Transactional
     public void updateWithCoverId(Long userId, Long articleId, String title, String content, Long coverImageId) {
+        updateWithCoverId(userId, articleId, title, content, coverImageId, null);
+    }
+
+    @Transactional
+    public void updateWithCoverId(Long userId, Long articleId, String title, String content, Long coverImageId, String contentFormat) {
         Article article = articleMapper.selectById(articleId);
         if (article == null) {
             throw new BusinessException("文章不存在");
@@ -423,6 +447,7 @@ public class ArticleService {
         if (!STATUS_DRAFT.equals(article.getStatus()) && !STATUS_REJECTED.equals(article.getStatus())) {
             throw new BusinessException("只能修改草稿或被驳回文章");
         }
+        article.setContentFormat(validateContentFormat(contentFormat == null ? article.getContentFormat() : contentFormat));
         article.setTitle(title);
         article.setContent(content);
         bindCover(article, userId, coverImageId);
@@ -535,13 +560,14 @@ public class ArticleService {
         sendKbIndexMessage(articleId);
     }
 
-    private Article createArticle(String title, String content, Long categoryId, Long userId, String status, Long coverImageId, String contentType) {
+    private Article createArticle(String title, String content, Long categoryId, Long userId, String status, Long coverImageId, String contentType, String contentFormat) {
         Category category = categoryService.findEnabledById(categoryId);
         if (category == null) {
             throw new BusinessException("板块不存在或已禁用");
         }
 
         Article article = new Article();
+        article.setContentFormat(validateContentFormat(contentFormat));
         article.setTitle(title);
         article.setContent(content);
         article.setCategoryId(categoryId);
@@ -564,6 +590,14 @@ public class ArticleService {
         article.setCoverImageId(coverImageId);
         article.setCoverUrl(imageResourceService.publicUrl(image));
         articleMapper.updateCoverBinding(article.getId(), coverImageId, article.getCoverUrl());
+    }
+
+    private String validateContentFormat(String format) {
+        if (format == null) return FORMAT_PLAIN_TEXT;
+        if (!FORMAT_PLAIN_TEXT.equals(format) && !FORMAT_MARKDOWN.equals(format)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "正文格式只能为 PLAIN_TEXT 或 MARKDOWN");
+        }
+        return format;
     }
 
     private String validateContentType(String type) {

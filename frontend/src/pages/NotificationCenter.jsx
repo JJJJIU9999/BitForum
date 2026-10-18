@@ -1,3 +1,4 @@
+import { displayTime } from '../utils/displayTime.js'
 import { useEffect, useState } from 'react'
 import { CheckCheck } from 'lucide-react'
 import { useNavigate, useOutletContext } from 'react-router'
@@ -71,7 +72,7 @@ function NotificationCenter() {
       {loading && <LoadingSpinner text="正在整理你的通知…" />}
       <MessageBanner message={message} type={messageType} />
       <div className="notification-list">
-        {notifications.map((notification) => <article className={`notification-item ${notification.readStatus === 0 ? 'unread' : ''}`} key={notification.id}><div className="notification-main"><StatusBadge status={notification.type} label={typeLabels[notification.type] || notification.type} /><div><h2>{notification.title}</h2><p>{notification.content}</p><small>{notification.createTime}</small></div></div><div className="notification-actions">{notification.articleId && <button className="text-button" type="button" onClick={() => navigate(`/articles/${notification.articleId}`)}>查看文章</button>}{notification.readStatus === 0 ? <button className="ghost-button compact-button" disabled={loading} type="button" onClick={() => handleRead(notification.id)}>标记已读</button> : <span className="status-badge status-published">已读</span>}</div></article>)}
+        {notifications.map((notification) => <article className={`notification-item ${notification.readStatus === 0 ? 'unread' : ''}`} key={notification.id}><div className="notification-main"><StatusBadge status={notification.type} label={typeLabels[notification.type] || notification.type} /><div><h2>{notification.title}</h2><p>{notification.content}</p><small>{displayTime(notification.createTime)}</small></div></div><div className="notification-actions">{notification.articleId && <button className="text-button" type="button" onClick={() => navigate(`/articles/${notification.articleId}`)}>查看文章</button>}{notification.readStatus === 0 ? <button className="ghost-button compact-button" disabled={loading} type="button" onClick={() => handleRead(notification.id)}>标记已读</button> : <span className="status-badge status-published">已读</span>}</div></article>)}
         {!loading && notifications.length === 0 && <EmptyState message="暂时没有新通知。" />}
       </div>
       {pageInfo.total > 0 && <Pagination pageInfo={pageInfo} onPageChange={setPageNum} loading={loading} />}

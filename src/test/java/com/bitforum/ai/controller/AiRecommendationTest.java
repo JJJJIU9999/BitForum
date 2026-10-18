@@ -100,7 +100,7 @@ class AiRecommendationTest {
     void shouldReturnEmptyListWhenRecommendationFails() throws Exception {
         stubLoggedIn();
         when(recommendService.recommend(any()))
-                .thenThrow(new IllegalStateException("Redis 连接中断：redis://198.51.100.5:6379"));
+                .thenThrow(new IllegalStateException("Redis 连接中断：redis://10.0.0.5:6379"));
 
         mockMvc.perform(get("/api/ai/recommendations")
                         .param("query", "并发")

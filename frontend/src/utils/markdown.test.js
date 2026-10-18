@@ -115,7 +115,7 @@ describe('renderMarkdown 结构渲染', () => {
 
   it('应渲染围栏代码块并识别语言', () => {
     const html = renderMarkdown('```java\nint a = 1;\n```')
-    expect(html).toContain('<pre>')
+    expect(html).toContain('<pre tabindex="0"')
     expect(html).toContain('class="language-java"')
     expect(html).toContain('int a = 1;')
   })
@@ -142,5 +142,30 @@ describe('renderMarkdown 结构渲染', () => {
     expect(html).toContain('<table>')
     expect(html).toContain('<ul>')
     expect(html).toContain('<li>只包含<strong>已发布</strong>文章</li>')
+  })
+})
+
+describe('P1-C代码与链接边界', () => {
+  it('does not interpret emphasis or links inside inline code', () => {
+    expect(renderInline('`**literal** [x](https://example.com)`')).toBe('<code>**literal** [x](https://example.com)</code>')
+  })
+  it.each(['javascript:alert(1)', 'data:text/html,x', '//evil.test', '/\\evil.test', 'https://example.com/"onclick="x', 'java\tscript:alert(1)'])('rejects unsafe target %s', (url) => {
+    expect(renderInline(`[x](${url})`)).not.toContain('<a ')
+  })
+  it('escapes attributes and does not format URLs as emphasis', () => {
+    const html = renderInline('[**safe**](https://example.com/?q=**x**&a=1)')
+    expect(html).toContain('href="https://example.com/?q=**x**&amp;a=1"')
+    expect(html).toContain('<strong>safe</strong>')
+  })
+  it('respects fence lengths and escapes unterminated or hostile code', () => {
+    const raw = '````html\n```\n<img onerror="x">\n````\n后文'
+    const html = renderMarkdown(raw)
+    expect(html).toContain('```\n&lt;img onerror=&quot;x&quot;&gt;')
+    expect(html).toContain('<p>后文</p>')
+    expect(renderMarkdown('```" onmouseover="x\n<script>x</script>')).not.toContain(' onmouseover="')
+  })
+  it('preserves tilde fenced code, CRLF and mixed list kinds', () => {
+    expect(renderMarkdown('~~~java\r\nint n = 1;\r\n~~~')).toContain('int n = 1;')
+    expect(renderMarkdown('- 一\n1. 二')).toBe('<ul><li>一</li></ul><ol><li>二</li></ol>')
   })
 })

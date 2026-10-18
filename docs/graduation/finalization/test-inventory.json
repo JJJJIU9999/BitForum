@@ -22,7 +22,7 @@
       "path": "src/test/java/com/bitforum/ai/agent/QaAgentToolExposureTest.java",
       "class": "com.bitforum.ai.agent.QaAgentToolExposureTest",
       "set": "unit",
-      "test_annotations": 4
+      "test_annotations": 8
     },
     {
       "path": "src/test/java/com/bitforum/ai/analyst/AiInsightGenerationServiceTest.java",
@@ -53,6 +53,18 @@
       "class": "com.bitforum.ai.analyst.AnalystInsightProbe",
       "set": "external-ai",
       "test_annotations": 1
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/config/AiModelSwitchTest.java",
+      "class": "com.bitforum.ai.config.AiModelSwitchTest",
+      "set": "unit",
+      "test_annotations": 2
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/config/DeepSeekClientConfigTest.java",
+      "class": "com.bitforum.ai.config.DeepSeekClientConfigTest",
+      "set": "unit",
+      "test_annotations": 6
     },
     {
       "path": "src/test/java/com/bitforum/ai/controller/AiControllerTest.java",
@@ -149,6 +161,12 @@
       "class": "com.bitforum.ai.orchestrator.AgentOrchestratorTest",
       "set": "integration",
       "test_annotations": 12
+    },
+    {
+      "path": "src/test/java/com/bitforum/ai/orchestrator/ChatSafetyTest.java",
+      "class": "com.bitforum.ai.orchestrator.ChatSafetyTest",
+      "set": "unit",
+      "test_annotations": 2
     },
     {
       "path": "src/test/java/com/bitforum/ai/rag/ArticleChunkingServiceTest.java",
@@ -337,6 +355,12 @@
       "test_annotations": 3
     },
     {
+      "path": "src/test/java/com/bitforum/config/UtcTimeConfigTest.java",
+      "class": "com.bitforum.config.UtcTimeConfigTest",
+      "set": "unit",
+      "test_annotations": 4
+    },
+    {
       "path": "src/test/java/com/bitforum/controller/ActuatorHealthControllerTest.java",
       "class": "com.bitforum.controller.ActuatorHealthControllerTest",
       "set": "integration",
@@ -419,6 +443,12 @@
       "class": "com.bitforum.controller.AdminUserControllerTest",
       "set": "integration",
       "test_annotations": 5
+    },
+    {
+      "path": "src/test/java/com/bitforum/controller/ArticleContentFormatContractTest.java",
+      "class": "com.bitforum.controller.ArticleContentFormatContractTest",
+      "set": "unit",
+      "test_annotations": 2
     },
     {
       "path": "src/test/java/com/bitforum/controller/ArticleControllerTest.java",
@@ -515,6 +545,12 @@
       "class": "com.bitforum.service.AdminHealthServiceTest",
       "set": "unit",
       "test_annotations": 4
+    },
+    {
+      "path": "src/test/java/com/bitforum/service/ArticleContentFormatTest.java",
+      "class": "com.bitforum.service.ArticleContentFormatTest",
+      "set": "unit",
+      "test_annotations": 9
     },
     {
       "path": "src/test/java/com/bitforum/service/ArticleMetricSyncServiceTest.java",

@@ -1,3 +1,4 @@
+import ArticleBody from '../components/ArticleBody.jsx'
 import { useEffect, useRef, useState } from 'react'
 import { Bookmark, ChevronLeft, Flag, Heart, MessageCircle } from 'lucide-react'
 import { useNavigate, useOutletContext, useParams } from 'react-router'
@@ -202,7 +203,7 @@ function ArticleDetail() {
             </p>
           )}
           {article.coverUrl && <img className="detail-cover" alt={`${article.title} 封面`} src={article.coverUrl} />}
-          <p className="article-body">{article.content}</p>
+          <ArticleBody content={article.content} contentFormat={article.contentFormat} />
           {isPublished && (
             <footer className="article-detail-footer">
               <div className="metric-row" aria-label="文章互动数据">

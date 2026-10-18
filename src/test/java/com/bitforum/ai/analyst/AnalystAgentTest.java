@@ -52,7 +52,7 @@ class AnalystAgentTest {
         when(dashboardService.summary()).thenReturn(sampleSummary());
 
         AnalystAgent agent = new AnalystAgent(unavailableChatClient(), dashboardService,
-                objectMapper, "deepseek-flash", traceRecorder, degradeGuard);
+                objectMapper, "deepseek-flash", traceRecorder, degradeGuard, true);
 
         AnalystAgent.InsightOutcome outcome = agent.analyze();
 
@@ -73,7 +73,7 @@ class AnalystAgentTest {
         when(dashboardService.summary()).thenThrow(new IllegalStateException("数据库连接中断"));
 
         AnalystAgent agent = new AnalystAgent(unavailableChatClient(), dashboardService,
-                objectMapper, "deepseek-flash", traceRecorder, degradeGuard);
+                objectMapper, "deepseek-flash", traceRecorder, degradeGuard, true);
 
         AnalystAgent.InsightOutcome outcome = agent.analyze();
 
@@ -107,7 +107,7 @@ class AnalystAgentTest {
         when(dashboardService.summary()).thenReturn(sampleSummary());
 
         AnalystAgent agent = new AnalystAgent(unavailableChatClient(), dashboardService,
-                objectMapper, "deepseek-flash", traceRecorder, degradeGuard);
+                objectMapper, "deepseek-flash", traceRecorder, degradeGuard, true);
 
         String snapshot = agent.analyze().dataSnapshot();
 

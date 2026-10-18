@@ -13,6 +13,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class BitForumSpringApplication {
 
 	public static void main(String[] args) {
+		// DATETIME columns and LocalDateTime.now() share the same UTC convention.
+		java.util.TimeZone.setDefault(java.util.TimeZone.getTimeZone("UTC"));
 		SpringApplication.run(BitForumSpringApplication.class, args);
 	}
 

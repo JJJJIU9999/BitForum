@@ -9,114 +9,217 @@ import {
   sendMessage,
 } from '../api/aiApi.js'
 import MarkdownText from './MarkdownText.jsx'
+import { getToken } from '../api/request.js'
 
-// AI 助手浮动面板（M13）。
-// 仅在用户登录后渲染；对话历史由后端持久化，刷新页面后仍然保留。
-function AiAssistantPanel() {
+// 同一页面中的发送与新建共享锁，重新挂载面板也不能重复提交。
+const submissions = new Set()
+const uncertainText = '发送状态待确认，请核对历史；确认前此会话暂停发送，不会自动重发。'
+
+function AiAssistantPanel({ userId }) {
+  const authToken = getToken()
   const [open, setOpen] = useState(false)
   const [conversations, setConversations] = useState([])
   const [activeId, setActiveId] = useState(null)
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
-  // M17：回答之后推荐的相关帖子。与消息自带的 citations（参考来源）互补
+  const [loading, setLoading] = useState(false)
+  const [verified, setVerified] = useState(true)
+  const [uncertain, setUncertain] = useState(false)
   const [relatedPosts, setRelatedPosts] = useState([])
   const [error, setError] = useState('')
   const bottomRef = useRef(null)
+  const alive = useRef(true)
+  const version = useRef(0)
+  const active = useRef(null)
+  const drafts = useRef({})
+  const histories = useRef({})
+  const key = (id) => `bitforum-ai-pending:${userId}:${id}`
+  const valid = (ticket) => alive.current && ticket === version.current && getToken() === authToken
 
-  // 每次打开时重新拉取会话列表，保证与他人/其他标签页操作后状态一致
   useEffect(() => {
-    if (open) {
-      refreshConversations()
-    }
+    alive.current = true
+    return () => { alive.current = false; version.current += 1 }
+  }, [])
+
+  // 同一账号直接重新登录也会更换 token；旧请求必须与新登录会话隔离。
+  useEffect(() => {
+    version.current += 1
+    active.current = null
+    drafts.current = {}
+    histories.current = {}
+    setOpen(false)
+    setConversations([])
+    setActiveId(null)
+    setMessages([])
+    setInput('')
+    setRelatedPosts([])
+    setError('')
+    setUncertain(false)
+    setVerified(true)
+    setLoading(false)
+    setSending(submissions.has(userId))
+  }, [userId, authToken])
+
+  useEffect(() => {
+    if (!open) return
+    const ticket = version.current
+    setSending(submissions.has(userId))
+    refreshConversations(ticket)
+    if (active.current) readHistory(active.current, ticket)
+    return () => { version.current += 1 }
   }, [open])
 
-  // 新消息到达后滚动到底部
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [messages, sending])
 
-  async function refreshConversations() {
+  async function refreshConversations(ticket) {
     try {
       const result = await listConversations()
-      setConversations(result.data || [])
+      if (valid(ticket)) setConversations(result.data || [])
     } catch (e) {
-      setError(e.message)
+      if (valid(ticket)) setError(e.message)
     }
   }
 
-  async function openConversation(id) {
-    setActiveId(id)
-    setError('')
+  // 只读核对。空历史或旧回答不能证明一个超时请求已经结束。
+  function reconcile(id, rows) {
+    const stored = sessionStorage.getItem(key(id))
+    const marker = stored ? JSON.parse(stored) : null
+    let blocked = rows.at(-1)?.role === 'user'
+    if (marker) {
+      const offset = marker.afterId == null ? 0 : rows.findIndex((m) => m.id === marker.afterId) + 1
+      const added = offset > 0 || marker.afterId == null ? rows.slice(offset) : []
+      const userIndex = added.findIndex((m) => m.role === 'user')
+      const completed = userIndex >= 0 && added.slice(userIndex + 1).some((m) => m.role === 'assistant')
+      blocked = !completed || blocked
+      if (!blocked) sessionStorage.removeItem(key(id))
+    }
+    return blocked
+  }
+
+  async function readHistory(id, ticket) {
+    if (valid(ticket)) { setLoading(true); setVerified(false) }
     try {
       const result = await listMessages(id)
-      setMessages(result.data || [])
-    setRelatedPosts([])
+      if (!valid(ticket)) return false
+      const rows = result.data || []
+      const blocked = reconcile(id, rows)
+      histories.current[id] = rows
+      setMessages(rows)
+      setUncertain(blocked)
+      setVerified(true)
+      setError(blocked ? uncertainText : '')
+      return !blocked
     } catch (e) {
-      setError(e.message)
-      setMessages([])
-    setRelatedPosts([])
+      if (valid(ticket)) {
+        setError(`${uncertainText} 历史读取失败：${e.message}`)
+        setVerified(false)
+        setUncertain(true)
+      }
+      return false
+    } finally {
+      if (valid(ticket)) setLoading(false)
     }
+  }
+
+  function selectConversation(id) {
+    const ticket = ++version.current
+    active.current = id
+    setActiveId(id)
+    setInput(drafts.current[id] || '')
+    setMessages([])
+    setRelatedPosts([])
+    setError('')
+    setUncertain(false)
+    readHistory(id, ticket)
   }
 
   async function handleNewConversation() {
+    if (submissions.has(userId)) return
+    submissions.add(userId)
+    const ticket = ++version.current
+    setSending(true)
     setError('')
     try {
       const result = await createConversation()
-      const created = result.data
-      setConversations((prev) => [created, ...prev])
-      setActiveId(created.id)
+      if (!valid(ticket)) return
+      setConversations((prev) => [result.data, ...prev])
+      active.current = result.data.id
+      setActiveId(result.data.id)
       setMessages([])
-    setRelatedPosts([])
+      setInput('')
+      setRelatedPosts([])
+      setUncertain(false)
+      setVerified(true)
     } catch (e) {
-      setError(e.message)
+      if (valid(ticket)) setError(e.message)
+    } finally {
+      submissions.delete(userId)
+      if (alive.current) setSending(false)
     }
   }
 
-  /**
-   * 用刚问的问题去要一批"相关帖子"。
-   * 失败就清空，绝不影响对话本身 —— 推荐只是附加内容。
-   */
-  async function loadRelatedPosts(query) {
+  async function loadRelatedPosts(query, ticket) {
     try {
       const result = await recommendForQuery(query, 3)
-      setRelatedPosts(result.data || [])
+      if (valid(ticket)) setRelatedPosts(result.data || [])
     } catch {
-      setRelatedPosts([])
+      if (valid(ticket)) setRelatedPosts([])
     }
   }
 
   async function handleSend(event) {
     event.preventDefault()
     const content = input.trim()
-    if (!content || sending) return
-
-    let conversationId = activeId
+    if (!content || submissions.has(userId) || loading || !verified || uncertain) return
+    submissions.add(userId)
+    const ticket = version.current
+    let conversationId = active.current
+    let posted = false
     setSending(true)
     setError('')
-
+    setRelatedPosts([])
     try {
-      // 没有选中会话时自动新建一个，避免用户先点"新建对话"
       if (!conversationId) {
         const created = await createConversation()
+        // 关闭面板或切换会话期间，不再发出模型请求。
+        if (!valid(ticket)) return
         conversationId = created.data.id
+        active.current = conversationId
         setActiveId(conversationId)
         setConversations((prev) => [created.data, ...prev])
       }
-
-      // 先把用户消息显示出来，避免等待期间界面没有反馈
-      setMessages((prev) => [...prev, { id: `local-${Date.now()}`, role: 'user', content }])
-      setInput('')
-
-      const result = await sendMessage(conversationId, content)
-      setMessages((prev) => [...prev, result.data])
-      // 会话标题可能因首轮提问而变化，重新拉取列表同步
-      refreshConversations()
-      loadRelatedPosts(content)
+      drafts.current[conversationId] = input
+      // 标记只保存消息位置，不存提问或密钥；刷新后先核对，不自动续发。
+      sessionStorage.setItem(key(conversationId), JSON.stringify({
+        afterId: histories.current[conversationId]?.at(-1)?.id ?? null,
+      }))
+      posted = true
+      await sendMessage(conversationId, content)
+      if (!valid(ticket)) return
+      const confirmed = await readHistory(conversationId, ticket)
+      if (confirmed && valid(ticket)) {
+        setInput('')
+        delete drafts.current[conversationId]
+        refreshConversations(ticket)
+        loadRelatedPosts(content, ticket)
+      }
     } catch (e) {
-      setError(e.message)
+      if (!valid(ticket)) return
+      if (posted) {
+        // 即便 POST 报错也只读回历史，不重发。输入保留供核对。
+        const confirmed = await readHistory(conversationId, ticket)
+        if (valid(ticket)) setError(confirmed
+          ? '请求返回异常，服务端已保存回答；请核对历史，输入已保留。'
+          : `${uncertainText} ${e.message}`)
+      } else {
+        setError(e.message)
+      }
     } finally {
-      setSending(false)
+      submissions.delete(userId)
+      if (alive.current) setSending(false)
     }
   }
 
@@ -143,10 +246,10 @@ function AiAssistantPanel() {
           AI 助手
         </strong>
         <div className="ai-panel-header-actions">
-          <button type="button" onClick={handleNewConversation} title="新建对话" aria-label="新建对话">
+          <button type="button" onClick={handleNewConversation} disabled={sending} title="新建对话" aria-label="新建对话">
             <MessageSquarePlus size={16} aria-hidden="true" />
           </button>
-          <button type="button" onClick={() => setOpen(false)} title="收起" aria-label="收起 AI 助手">
+          <button type="button" onClick={() => { version.current += 1; setOpen(false) }} title="收起" aria-label="收起 AI 助手">
             <X size={16} aria-hidden="true" />
           </button>
         </div>
@@ -159,7 +262,7 @@ function AiAssistantPanel() {
               key={conversation.id}
               type="button"
               className={conversation.id === activeId ? 'is-active' : ''}
-              onClick={() => openConversation(conversation.id)}
+              onClick={() => selectConversation(conversation.id)}
               title={conversation.title}
             >
               {conversation.title}
@@ -169,11 +272,11 @@ function AiAssistantPanel() {
       )}
 
       <div className="ai-panel-body">
-        {messages.length === 0 && !sending && (
+        {messages.length === 0 && !sending && !loading && (
           <div className="ai-empty">
             <p>你好，我是 BitForum 的 AI 助手。</p>
             <p className="ai-empty-hint">
-              可以多轮对话、查询与操作站内数据，并基于站内文章作答（回答下方会列出参考来源）。
+              可以多轮讨论技术问题、检索公开文章，并查看回答下方的参考来源。不能代你修改站内数据。
             </p>
           </div>
         )}
@@ -223,9 +326,13 @@ function AiAssistantPanel() {
           </div>
         )}
 
+        {loading && <p role="status">正在核对历史…</p>}
         {sending && <div className="ai-message ai-message-assistant ai-typing">正在生成回答…</div>}
 
-        {error && <p className="ai-error">{error}</p>}
+        {error && <p className="ai-error" role="alert">{error}</p>}
+        {activeId && (uncertain || !verified) && (
+          <button type="button" disabled={sending || loading} onClick={() => readHistory(activeId, version.current)}>核对历史</button>
+        )}
         <div ref={bottomRef} />
       </div>
 
@@ -234,12 +341,12 @@ function AiAssistantPanel() {
           type="text"
           value={input}
           maxLength={2000}
-          onChange={(event) => setInput(event.target.value)}
+          onChange={(event) => { setInput(event.target.value); drafts.current[activeId || 'new'] = event.target.value }}
           placeholder="输入你的问题…"
           aria-label="消息内容"
-          disabled={sending}
+          disabled={sending || loading}
         />
-        <button type="submit" disabled={sending || !input.trim()} aria-label="发送">
+        <button type="submit" disabled={sending || loading || !verified || uncertain || !input.trim()} aria-label="发送">
           <Send size={16} aria-hidden="true" />
         </button>
       </form>

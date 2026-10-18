@@ -19,6 +19,10 @@ public class ArticleDraftRequest {
     @Schema(description = "草稿正文", example = "先保存为草稿的正文内容")
     private String content;
 
+    @Pattern(regexp = "PLAIN_TEXT|MARKDOWN", message = "正文格式只能为 PLAIN_TEXT 或 MARKDOWN")
+    @Schema(description = "正文格式；创建时省略为PLAIN_TEXT，更新时省略保持原格式")
+    private String contentFormat;
+
     @Size(max = 255, message = "封面URL不能超过255个字符")
     @Schema(description = "旧版封面 URL 字段；新请求不可使用")
     private String coverUrl;

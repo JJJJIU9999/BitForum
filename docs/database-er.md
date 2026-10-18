@@ -1,6 +1,6 @@
-# 数据库 E-R 图（V24）
+# 数据库 E-R 图（V25候选，V24关系不变）
 
-本图依据V1–V24 SQL及既有独立合成库结构回读。V24包含25业务表及1张Flyway元数据表；实际环境版本须单独回读，不由源码版本推断。完整字段可查 [迁移源码](../src/main/resources/db/migration)。
+关系依据V1–V24 SQL及既有独立合成库结构回读；V25仅新增 article.content_format，不增表或关系。V24包含25业务表及1张Flyway元数据表；实际环境版本须单独回读，不由源码版本推断。完整字段可查 [迁移源码](../src/main/resources/db/migration)。
 
 **实体属性只摘录主键和关系字段，完整字段见结构索引。实线仅表示实际数据库外键；虚线是服务端逻辑关联，不表示数据库强制外键。** 当前只有 category_follow.category_id → category.id，ON DELETE CASCADE。其余关联不能宣称数据库外键保护。
 
@@ -17,6 +17,7 @@ erDiagram
         bigint accepted_answer_id
         bigint category_id
         varchar content_type
+        varchar content_format
         bigint cover_image_id
         bigint id PK
         varchar status

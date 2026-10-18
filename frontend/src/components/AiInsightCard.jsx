@@ -1,3 +1,4 @@
+import { displayTime } from '../utils/displayTime.js'
 import { useEffect, useState } from 'react'
 import { Sparkles } from 'lucide-react'
 import { generateInsight, getInsightStatus, getLatestInsight } from '../api/adminApi.js'
@@ -124,7 +125,7 @@ function AiInsightCard() {
           {/* 快照说明放在正文之前：报告里的数字是生成那一刻的，与顶部实时统计可能不一致，
               管理员必须先看到这一点，再去读下面的分析。 */}
           <p className="ai-insight-meta">
-            数据快照生成于 {(report.createTime || '').replace('T', ' ').slice(0, 16)} · 非实时数据
+            数据快照生成于 {displayTime(report.createTime)} · 非实时数据
             {report.model ? ` · 模型 ${report.model}` : ''}
             {report.latencyMs ? ` · 耗时 ${report.latencyMs} ms` : ''}
           </p>

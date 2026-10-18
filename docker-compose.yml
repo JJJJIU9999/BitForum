@@ -1,6 +1,10 @@
 services:
   mysql:
+    # 3.5 GiB budget; pending real-load verification.
+    mem_limit: 512m
+    memswap_limit: 512m
     image: mysql:8.0
+    command: ["--innodb-buffer-pool-size=128M", "--max-connections=40", "--performance-schema=OFF"]
     restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -29,13 +33,16 @@ services:
   # 原来的 redis:7-alpine 没有该模块，向量索引无法创建。
   # 注意：镜像变了，6379 端口和协议不变，现有 RedisService 的 String/Set/ZSet 用法零改动。
   redis:
+    # 3.5 GiB budget; pending real-load verification.
+    mem_limit: 384m
+    memswap_limit: 384m
     image: redis/redis-stack-server:7.4.0-v8
     restart: unless-stopped
     environment:
       # 镜像自带的 /entrypoint.sh 负责 --loadmodule 加载 RediSearch 等模块，
       # 这里只通过 REDIS_ARGS 追加参数，千万不要用 command 覆盖 entrypoint，
       # 否则模块不会加载，FT.CREATE 等向量检索命令会报 unknown command。
-      REDIS_ARGS: "--appendonly yes"
+      REDIS_ARGS: "--appendonly yes --appendfsync everysec --maxmemory 128mb --maxmemory-policy noeviction"
     ports:
       # S3：同样只绑定回环地址
       - "127.0.0.1:6379:6379"
@@ -50,9 +57,13 @@ services:
       start_period: 5s
 
   rabbitmq:
+    # 3.5 GiB budget; pending real-load verification.
+    mem_limit: 320m
+    memswap_limit: 320m
     image: rabbitmq:3-management
     restart: unless-stopped
     environment:
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "+S 2:2 +A 4 -rabbit vm_memory_high_watermark {absolute,201326592}"
       RABBITMQ_DEFAULT_USER: ${SPRING_RABBITMQ_USERNAME}
       RABBITMQ_DEFAULT_PASS: ${SPRING_RABBITMQ_PASSWORD}
     ports:
@@ -67,6 +78,9 @@ services:
       start_period: 20s
   
   app:
+    # 3.5 GiB budget; pending real-load verification.
+    mem_limit: 1280m
+    memswap_limit: 1280m
     build: .
     restart: unless-stopped
     ports:
@@ -79,6 +93,9 @@ services:
       rabbitmq:
         condition: service_healthy
     environment:
+      JAVA_TOOL_OPTIONS: "-Xms128m -Xmx512m -XX:MaxDirectMemorySize=128m -XX:ActiveProcessorCount=2 -Dsun.net.http.retryPost=false"
+      SERVER_TOMCAT_THREADS_MAX: "32"
+      SERVER_TOMCAT_THREADS_MIN_SPARE: "4"
       # app 和 mysql 在同一个 Compose 网络里，所以后端容器用服务名 mysql + 容器端口 3306 访问数据库
       # allowPublicKeyRetrieval=true 用来解决 MySQL 8 在容器环境下可能出现的 Public Key Retrieval is not allowed
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-bit_forum}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai&characterEncoding=UTF-8
@@ -90,22 +107,35 @@ services:
       SPRING_RABBITMQ_PASSWORD: ${SPRING_RABBITMQ_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRATION: ${JWT_EXPIRATION:-604800000}
-      # 非空占位符用于关闭模型的单机演示；真实密钥只在明确授权后配置。
+      # 收费能力默认关闭；非空占位值见.env.example，真实密钥仅本机注入。
       DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+      DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
       DEEPSEEK_CHAT_ENABLED: ${DEEPSEEK_CHAT_ENABLED:-false}
-      BITFORUM_RECOMMEND_REASON_ENABLED: ${BITFORUM_RECOMMEND_REASON_ENABLED:-false}
-      BITFORUM_MODERATION_AUTO_APPROVE: ${BITFORUM_MODERATION_AUTO_APPROVE:-false}
+      BITFORUM_QA_TOOLS_ENABLED: ${BITFORUM_QA_TOOLS_ENABLED:-false}
       BITFORUM_QA_ALLOW_WRITE_TOOLS: ${BITFORUM_QA_ALLOW_WRITE_TOOLS:-false}
+      BITFORUM_RECOMMEND_REASON_ENABLED: ${BITFORUM_RECOMMEND_REASON_ENABLED:-false}
+      BITFORUM_MODERATION_MODEL_ENABLED: ${BITFORUM_MODERATION_MODEL_ENABLED:-false}
+      BITFORUM_MODERATION_AUTO_APPROVE: ${BITFORUM_MODERATION_AUTO_APPROVE:-false}
+      BITFORUM_ANALYST_MODEL_ENABLED: ${BITFORUM_ANALYST_MODEL_ENABLED:-false}
     volumes:
       - uploads-data:/app/uploads
 
   frontend:
+    # 3.5 GiB budget; pending real-load verification.
+    mem_limit: 64m
+    memswap_limit: 64m
     build: ./frontend
     restart: unless-stopped
     ports:
       - "127.0.0.1:80:80"
     depends_on:
       - app
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- -T 4 http://127.0.0.1/api/category/list | grep -Eq '\"code\"[[:space:]]*:[[:space:]]*200'"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
 
 volumes:
   mysql-data:

@@ -1,6 +1,6 @@
 import { useEffect, useId, useRef } from 'react'
 
-function ConfirmDialog({ title, message, inputLabel, onConfirm, onCancel, confirmText = '确认', danger = false }) {
+function ConfirmDialog({ title, message, inputLabel, onConfirm, onCancel, confirmText = '确认', confirmDisabled = false, danger = false }) {
   const dialogRef = useRef(null)
   const previousFocusRef = useRef(null)
   const titleId = useId()
@@ -40,6 +40,7 @@ function ConfirmDialog({ title, message, inputLabel, onConfirm, onCancel, confir
 
   function handleSubmit(event) {
     event.preventDefault()
+    if (confirmDisabled) return
     const input = event.currentTarget.elements.namedItem('dialog-input')
     const value = input?.value?.trim()
     if (inputLabel && !value) {
@@ -71,7 +72,7 @@ function ConfirmDialog({ title, message, inputLabel, onConfirm, onCancel, confir
           )}
           <div className="dialog-actions">
             <button className="ghost-button" type="button" onClick={onCancel}>取消</button>
-            <button className={danger ? 'danger-button' : 'primary-button'} type="submit">{confirmText}</button>
+            <button className={danger ? 'danger-button' : 'primary-button'} type="submit" disabled={confirmDisabled}>{confirmText}</button>
           </div>
         </form>
       </section>

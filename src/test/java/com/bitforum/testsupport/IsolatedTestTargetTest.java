@@ -12,7 +12,7 @@ class IsolatedTestTargetTest {
         return Stream.of(null, "", "jdbc:mysql://localhost:3306/bit_forum?useSSL=false",
             "jdbc:mysql://127.0.0.1:23306/bit_forum?useSSL=false",
             "jdbc:mysql://127.0.0.1:3306/bitforum_finalization_test?useSSL=false",
-            "jdbc:mysql://192.0.2.2:23306/bitforum_finalization_test?useSSL=false",
+            "jdbc:mysql://192.168.1.2:23306/bitforum_finalization_test?useSSL=false",
             "jdbc:mysql://127.0.0.1:23306/bitforum_finalization_test?socketFactory=unsafe",
             "jdbc:mysql://127.0.0.1:23306/bitforum_finalization_test?useSSL=false#unsafe",
             "jdbc:mysql://user@127.0.0.1:23306/bitforum_finalization_test?useSSL=false",

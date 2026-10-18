@@ -3,6 +3,7 @@ package com.bitforum.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -21,6 +22,10 @@ public class ArticleDraftUpdateRequest {
     @NotBlank(message = "内容不能为空")
     @Schema(description = "文章正文", example = "更新后的正文内容")
     private String content;
+
+    @Pattern(regexp = "PLAIN_TEXT|MARKDOWN", message = "正文格式只能为 PLAIN_TEXT 或 MARKDOWN")
+    @Schema(description = "正文格式；创建时省略为PLAIN_TEXT，更新时省略保持原格式")
+    private String contentFormat;
 
     @Size(max = 255, message = "封面URL不能超过255个字符")
     @Schema(description = "旧版封面 URL 字段；新请求不可使用")

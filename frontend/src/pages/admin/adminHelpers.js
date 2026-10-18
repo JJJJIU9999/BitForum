@@ -1,6 +1,7 @@
+import { displayTime } from '../../utils/displayTime.js'
+
 export function formatDate(dateText) {
-  if (!dateText) return '-'
-  return dateText.replace('T', ' ').slice(0, 16)
+  return dateText ? displayTime(dateText) : '-'
 }
 
 export function formatNumber(value) {

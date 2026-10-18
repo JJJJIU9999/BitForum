@@ -1,18 +1,7 @@
 /**
- * 轻量 Markdown 渲染（M14 补强）。
- *
- * 为什么自己实现而不引入 react-markdown / marked：
- * 项目约束明确要求不引入复杂 UI 组件库；这里是可控的纯函数逻辑，
- * 可测试、零依赖，也不会因上游版本变动影响构建。
- *
- * 安全要求（重要）：渲染结果会通过 dangerouslySetInnerHTML 注入，因此
- * 1. 先做 HTML 转义，任何 < > & 都变成实体，模型输出的标签不会被执行；
- * 2. 链接只允许 http/https 协议，阻断 javascript: 等危险 scheme；
- * 3. 表格单元格与列表项在拼入 HTML 前也经过转义。
- *
- * 支持范围（覆盖大模型回答里的常见写法）：
- * 围栏代码块、表格、标题、有序/无序列表、引用、分隔线，
- * 以及行内的粗体、斜体、行内代码、链接。
+ * Shared basic Markdown subset for AI messages and explicitly opted-in user bodies.
+ * Escape raw text/attributes, keep code literal, allow HTTP(S) and same-origin root links.
+ * No raw HTML, inline images, embedded content, syntax highlighter or full CommonMark claim.
  */
 
 /** 转义 HTML 特殊字符，这是所有后续拼接的安全前提 */
@@ -25,27 +14,30 @@ export function escapeHtml(text) {
     .replace(/'/g, '&#39;')
 }
 
-/** 行内语法：粗体、斜体、行内代码、链接 */
-export function renderInline(text) {
-  let result = escapeHtml(text)
-
-  // 行内代码优先处理，避免其中的符号被当成强调语法
-  result = result.replace(/`([^`]+)`/g, '<code>$1</code>')
-  result = result.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
-  result = result.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, '$1<em>$2</em>')
-
-  // 链接：([文字](目标))。目标内部可含成对括号，例如 wiki 链接或 javascript:alert(1)。
-  // 若只用 [^)]+ 匹配，遇到含括号的 URL 会在第一个 ) 处提前截断并残留字符，这里做完整配对。
-  result = result.replace(/\[([^\]]+)\]\(([^()]*(?:\([^()]*\)[^()]*)*)\)/g, (match, label, url) => {
-    const safe = /^(https?:\/\/|\/)/i.test(url) ? url : null
-    if (!safe) {
-      // 非白名单协议：丢弃链接，只保留可见文字，避免 javascript: 之类的可点击危险链接
-      return label
-    }
-    return `<a href="${safe}" target="_blank" rel="noopener noreferrer">${label}</a>`
-  })
-
-  return result
+// Parse raw tokens before generating HTML: code stays literal and URLs are never formatted.
+export function renderInline(text, depth = 0) {
+  const source = String(text)
+  if (depth > 8) return escapeHtml(source)
+  const tokens = /`([^`\n]+)`|(!?\[([^\]\n]+)\]\(([^()\n]*(?:\([^()\n]*\)[^()\n]*)*)\))|\*\*([^*\n]+)\*\*|\*([^*\n]+)\*/g
+  let result = ''
+  let end = 0
+  for (const match of source.matchAll(tokens)) {
+    result += escapeHtml(source.slice(end, match.index))
+    const [, code, link, label, url, strong, emphasis] = match
+    if (code !== undefined) result += `<code>${escapeHtml(code)}</code>`
+    else if (link !== undefined) {
+      // Inline images stay literal: public images still use the existing reviewed cover workflow.
+      if (link.startsWith('!')) result += escapeHtml(link)
+      else {
+        const safe = /^(?:https?:\/\/[^\s<>"'\\]+|\/(?!\/)[^\s<>"'\\]*)$/i.test(url)
+        const visible = renderInline(label, depth + 1)
+        result += safe ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${visible}</a>` : visible
+      }
+    } else if (strong !== undefined) result += `<strong>${renderInline(strong, depth + 1)}</strong>`
+    else result += `<em>${renderInline(emphasis, depth + 1)}</em>`
+    end = match.index + match[0].length
+  }
+  return result + escapeHtml(source.slice(end))
 }
 
 /** 判断表格的分隔行，如 |---|---| */
@@ -80,30 +72,32 @@ function renderTable(headerCells, bodyRows) {
  * @param {string} markdown 模型返回的原始文本
  * @returns {string} 可直接注入的 HTML
  */
-export function renderMarkdown(markdown) {
+export function renderMarkdown(markdown, { headingOffset = 2 } = {}) {
   if (!markdown) {
     return ''
   }
 
-  const lines = String(markdown).replace(/\r\n/g, '\n').split('\n')
+  const lines = String(markdown).replace(/\r\n?/g, '\n').split('\n')
   const blocks = []
   let index = 0
 
   while (index < lines.length) {
     const line = lines[index]
 
-    // 围栏代码块
-    if (/^\s*```/.test(line)) {
-      const language = line.replace(/^\s*```/, '').trim()
+    // Fence lengths must match; an unclosed block remains escaped code until the end.
+    const fence = line.match(/^ {0,3}(`{3,}|~{3,})(.*)$/)
+    if (fence) {
+      const language = /^[a-zA-Z0-9_+-]{1,32}$/.test(fence[2].trim()) ? fence[2].trim() : ''
+      const closing = new RegExp(`^ {0,3}${fence[1][0]}{${fence[1].length},}\\s*$`)
       const codeLines = []
       index += 1
-      while (index < lines.length && !/^\s*```/.test(lines[index])) {
+      while (index < lines.length && !closing.test(lines[index])) {
         codeLines.push(lines[index])
         index += 1
       }
-      index += 1 // 跳过结束围栏
-      const langAttr = language ? ` class="language-${escapeHtml(language)}"` : ''
-      blocks.push(`<pre><code${langAttr}>${escapeHtml(codeLines.join('\n'))}</code></pre>`)
+      if (index < lines.length) index += 1
+      const langAttr = language ? ` class="language-${language}"` : ''
+      blocks.push(`<pre tabindex="0" aria-label="代码块${language ? ` ${language}` : ''}"><code${langAttr}>${escapeHtml(codeLines.join('\n'))}</code></pre>`)
       continue
     }
 
@@ -141,7 +135,7 @@ export function renderMarkdown(markdown) {
     // 标题
     const heading = line.match(/^(#{1,6})\s+(.*)$/)
     if (heading) {
-      const level = Math.min(heading[1].length + 2, 6) // 面板内从 h3 起，避免标题过大
+      const level = Math.min(heading[1].length + headingOffset, 6) // AI从h3、用户正文从h2起
       blocks.push(`<h${level}>${renderInline(heading[2])}</h${level}>`)
       index += 1
       continue
@@ -169,7 +163,7 @@ export function renderMarkdown(markdown) {
     if (/^\s*([-*+]|\d+\.)\s+/.test(line)) {
       const ordered = /^\s*\d+\.\s+/.test(line)
       const items = []
-      while (index < lines.length && /^\s*([-*+]|\d+\.)\s+/.test(lines[index])) {
+      while (index < lines.length && /^\s*([-*+]|\d+\.)\s+/.test(lines[index]) && /^\s*\d+\.\s+/.test(lines[index]) === ordered) {
         items.push(lines[index].replace(/^\s*([-*+]|\d+\.)\s+/, ''))
         index += 1
       }
@@ -183,13 +177,13 @@ export function renderMarkdown(markdown) {
     while (
       index < lines.length &&
       lines[index].trim() &&
-      !/^\s*```/.test(lines[index]) &&
+      !/^ {0,3}(`{3,}|~{3,})/.test(lines[index]) &&
       !/^(#{1,6})\s+/.test(lines[index]) &&
       !/^\s*([-*+]|\d+\.)\s+/.test(lines[index]) &&
       !/^\s*>\s?/.test(lines[index])
     ) {
       // 段落中间若出现表格头，停止合并交给下一轮处理
-      if (paragraph.length > 0 && looksLikeTableRow(lines[index])) {
+      if (paragraph.length > 0 && looksLikeTableRow(lines[index]) && index + 1 < lines.length && isSeparatorRow(parseRow(lines[index + 1]))) {
         break
       }
       paragraph.push(lines[index])

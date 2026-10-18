@@ -157,7 +157,7 @@ class ArticleControllerTest {
         mockEnabledUser("user-token", 54L);
         when(articleService.findById(4L)).thenReturn(article);
         doThrow(new com.bitforum.exception.BusinessException("只能修改草稿或被驳回文章"))
-                .when(articleService).updateWithCoverId(54L, 4L, "新标题", "新内容", null);
+                .when(articleService).updateWithCoverId(54L, 4L, "新标题", "新内容", null, null);
 
         mockMvc.perform(put("/api/article/update")
                 .header("Authorization", "Bearer user-token")

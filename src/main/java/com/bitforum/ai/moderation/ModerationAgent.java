@@ -126,16 +126,19 @@ public class ModerationAgent {
     private final String modelName;
     private final int maxContentChars;
     private final AiDegradeGuard degradeGuard;
+    private final boolean modelEnabled;
 
     public ModerationAgent(
             ObjectProvider<ChatClient> chatClientProvider,
             @Value("${bitforum.ai.moderation.model-name:deepseek-flash}") String modelName,
             @Value("${bitforum.ai.moderation.max-content-chars:2000}") int maxContentChars,
-            AiDegradeGuard degradeGuard) {
+            AiDegradeGuard degradeGuard,
+            @Value("${bitforum.ai.moderation.model-enabled:true}") boolean modelEnabled) {
         this.chatClientProvider = chatClientProvider;
         this.modelName = modelName;
         this.maxContentChars = maxContentChars;
         this.degradeGuard = degradeGuard;
+        this.modelEnabled = modelEnabled;
     }
 
     /**
@@ -152,7 +155,7 @@ public class ModerationAgent {
                     "内容为空，无需审核", modelName, 0L);
         }
 
-        ChatClient chatClient = chatClientProvider.getIfAvailable();
+        ChatClient chatClient = modelEnabled ? chatClientProvider.getIfAvailable() : null;
         if (chatClient == null) {
             // M18：降级文案与原因码由 Guard 统一给出（"为什么降级"在全站是同一套说法）
             String message = degradeGuard.degrade(TraceDegradeReason.AI_DISABLED,

@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-18",
+  "repository": "JJJJIU9999/BitForum",
+  "pull_request": "https://github.com/JJJJIU9999/BitForum/pull/1",
+  "verified_product_commit": "8631005d5516dc2d8f866c0aa9eb535b983fc7ce",
+  "ci_run": "https://github.com/JJJJIU9999/BitForum/actions/runs/39101207592",
+  "backend_sets": [
+    {
+      "set": "unit",
+      "tests": 364,
+      "passed": 364,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "set": "integration",
+      "tests": 324,
+      "passed": 324,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "set": "cm22",
+      "tests": 21,
+      "passed": 21,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "set": "cm23",
+      "tests": 6,
+      "passed": 6,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "set": "cm24",
+      "tests": 10,
+      "passed": 10,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0
+    },
+    {
+      "set": "external-ai",
+      "tests": 13,
+      "passed": 0,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 13
+    }
+  ],
+  "backend_passed": 725,
+  "backend_skipped_by_policy": 13,
+  "backend_failures": 0,
+  "backend_errors": 0,
+  "frontend_passed": 246,
+  "frontend_build": "passed",
+  "ci_jobs": [
+    "backend-unit",
+    "backend-integration",
+    "frontend"
+  ],
+  "all_jobs": "success",
+  "ci_empty_database_flyway_version": "25",
+  "protected_snapshot_unchanged": true,
+  "local_runtime_deployed": false,
+  "local_database_modified": false,
+  "real_model_calls_in_publication": 0,
+  "note": "Subsequent publication housekeeping changes documentation only. Latest PR/main checks remain visible on GitHub; this file binds counts to the product commit and run above."
+}

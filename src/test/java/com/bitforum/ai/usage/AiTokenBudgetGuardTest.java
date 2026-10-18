@@ -23,7 +23,7 @@ import com.bitforum.ai.trace.TraceDegradeReason;
  *
  * <p>要验证的只有三件事，以及它们的边界：
  * 单用户每日预算（token / 费用两个维度）、超限后的统一降级文案、单次输入保护。
- * 另外明确锁定两个**有意的**软边界：查询失败时放行（fail-open）、匿名不检查。
+ * 另外明确锁定两个**有意的**软边界：查询失败时阻断（fail-closed）、匿名不检查。
  */
 class AiTokenBudgetGuardTest {
 
@@ -102,13 +102,15 @@ class AiTokenBudgetGuardTest {
         assertTrue(decision.allowed(), "配置 <= 0 表示不限制该维度");
     }
 
-    /** 预算组件自身故障不应让所有人用不了 AI：fail-open，与"AI 挂了不影响主流程"同一原则。 */
+    /** 预算查询故障不得继续产生模型费用。 */
     @Test
-    void shouldFailOpenWhenQueryFails() {
+    void shouldStopExternalCallsWhenQueryFails() {
         when(usageMapper.selectUserDaily(any(), any()))
                 .thenThrow(new IllegalStateException("数据库不可用"));
 
-        assertTrue(guard(true, TOKEN_LIMIT, COST_LIMIT, 4000).check(13L).allowed());
+        var decision = guard(true, TOKEN_LIMIT, COST_LIMIT, 4000).check(13L);
+        assertFalse(decision.allowed());
+        assertEquals(TraceDegradeReason.BUDGET_UNAVAILABLE, decision.reason());
     }
 
     @Test

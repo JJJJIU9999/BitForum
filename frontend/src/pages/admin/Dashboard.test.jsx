@@ -173,7 +173,7 @@ describe('Dashboard', () => {
 
     await renderDashboard(fullSummary())
 
-    const meta = await screen.findByText(/数据快照生成于 2026-09-19 15:29/)
+    const meta = await screen.findByText(/数据快照生成于 2026-09-19 23:29/)
     expect(meta.textContent).toContain('非实时数据')
     expect(meta.textContent).toContain('deepseek-flash')
     expect(meta.textContent).toContain('5004 ms')

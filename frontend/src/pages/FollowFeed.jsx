@@ -6,13 +6,17 @@ import ArticleCard from '../components/ArticleCard.jsx'
 import LoadingSpinner from '../components/LoadingSpinner.jsx'
 import EmptyState from '../components/EmptyState.jsx'
 import MessageBanner from '../components/MessageBanner.jsx'
+import ContentFeedNav from '../components/ContentFeedNav.jsx'
 export default function FollowFeed() {
-  const { currentUser } = useOutletContext(), [params, setParams] = useSearchParams(), [refresh, setRefresh] = useState(0)
-  const type = params.get('type') || ''
+  const { currentUser } = useOutletContext() || {}, [params, setParams] = useSearchParams(), [refresh, setRefresh] = useState(0)
+  const type = ['ARTICLE', 'QUESTION'].includes(params.get('type')) ? params.get('type') : ''
   return <section className="content-view topic-view"><PageHeader title="关注动态" description="你关注的话题与作者发布的公开文章和问题，按创建时间排列。" />
+    <ContentFeedNav active="following" currentUser={currentUser} />
     <div className="topic-shortcuts"><Link to="/topics">浏览话题</Link><Link to="/me/topics">我的话题</Link></div>
+    {currentUser ? <>
     <div className="topic-toolbar"><label>内容类型<select value={type} onChange={(e) => { const next = new URLSearchParams(params); e.target.value ? next.set('type', e.target.value) : next.delete('type'); setParams(next) }}><option value="">全部内容</option><option value="ARTICLE">文章</option><option value="QUESTION">问题</option></select></label><button className="ghost-button" onClick={() => setRefresh((v) => v + 1)}>刷新动态</button></div>
     <FeedBatch key={`${currentUser?.userId}:${type}:${refresh}`} type={type} />
+    </> : <div className="feed-discovery"><p>登录后查看你关注的话题与作者动态。</p><Link className="primary-button inline-button" to="/login?redirectTo=%2Ffollowing">登录查看关注</Link></div>}
   </section>
 }
 function FeedBatch({ type }) {
@@ -33,7 +37,7 @@ function FeedBatch({ type }) {
     <div className="article-list">{records.map((a) => <ArticleCard key={a.id} article={a} />)}</div>
     {loading && <LoadingSpinner text="正在加载关注动态…" />}<MessageBanner message={error} type="error" />
     {error && <button className="ghost-button" disabled={loading} onClick={() => load(cursor, generation.current)}>重试动态</button>}
-    {!loading && !error && !records.length && <EmptyState message="暂无关注动态。试试关注话题，或在作者主页关注作者。" />}
+    {!loading && !error && !records.length && <div className="feed-discovery"><EmptyState message="暂无关注动态。试试关注话题，或在作者主页关注作者。" /><Link to="/topics">发现感兴趣的话题</Link><Link to="/">从最新内容发现作者</Link></div>}
     {!error && more && <button className="ghost-button feed-more" disabled={loading} onClick={() => load(cursor, generation.current)}>加载下一批</button>}
     {!loading && !error && records.length > 0 && !more && <p className="muted" role="status">已读完当前关注动态。</p>}
   </div>

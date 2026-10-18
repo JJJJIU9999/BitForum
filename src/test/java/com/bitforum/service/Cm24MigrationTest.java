@@ -30,7 +30,7 @@ class Cm24MigrationTest {
             s.executeUpdate("INSERT INTO user_follow(follower_id,following_id) VALUES(24,25)");
             Map<String,Object> old=row(s,"SELECT * FROM article WHERE id=24001"),relation=row(s,"SELECT * FROM user_follow WHERE follower_id=24");
             Map<String,Object> historicalChecksums=checksums(s);
-            var flyway=Flyway.configure().dataSource(upgrade,user,password).load();assertEquals(1,flyway.migrate().migrationsExecuted);flyway.validate();
+            var flyway=Flyway.configure().dataSource(upgrade,user,password).target("24").load();assertEquals(1,flyway.migrate().migrationsExecuted);flyway.validate();
             assertEquals(historicalChecksums,checksums(s));
             assertEquals(old,row(s,"SELECT * FROM article WHERE id=24001"));assertEquals(relation,row(s,"SELECT * FROM user_follow WHERE follower_id=24"));
             s.executeUpdate("INSERT INTO category(id,name) VALUES(24001,'合成空话题')");
@@ -40,7 +40,7 @@ class Cm24MigrationTest {
             s.executeUpdate("DELETE FROM category WHERE id=24001");assertEquals(0L,((Number)row(s,"SELECT COUNT(*) n FROM category_follow WHERE category_id=24001").get("n")).longValue());
             assertEquals("24",row(s,"SELECT version FROM flyway_schema_history ORDER BY installed_rank DESC LIMIT 1").get("version"));
         }
-        var f=Flyway.configure().dataSource(fresh,user,password).load();assertEquals(24,f.migrate().migrationsExecuted);f.validate();
+        var f=Flyway.configure().dataSource(fresh,user,password).target("24").load();assertEquals(24,f.migrate().migrationsExecuted);f.validate();
     }
     private Map<String,Object> checksums(Statement s) throws SQLException {
         List<String> names=new ArrayList<>();
