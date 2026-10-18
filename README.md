@@ -91,17 +91,17 @@ String 记录浏览计数，Set 保存文章点赞关系，ZSet 维护热榜。�
 
 ## 可选 AI 扩展
 
-当前本地候选已接通普通技术问答、多轮历史、公开文章 RAG 与引用。发送成功以服务端历史为准；超时或状态不明时保留输入、核对历史，不自动重发。DeepSeek 专属客户端固定非思考模式，关闭自动重试。
+当前实现已接通普通技术问答、多轮历史、公开文章 RAG 与引用。发送成功以服务端历史为准；超时或状态不明时保留输入、核对历史，不自动重发。DeepSeek 专属客户端固定非思考模式，关闭自动重试。
 
 Spring AI 还包含只读工具查询、审核辅助、运营洞察和相关推荐的既有实现。本地 ONNX 生成嵌入，Redis Stack 执行向量检索；召回后再次校验文章公开状态与索引完成状态。推荐排序由后端融合结果，模型补充理由；执行轨迹、用量、软预算与统一降级用于观察和控制调用。
 
-按 [示例配置](.env.example) 与 Compose 运行时，收费聊天、全部模型工具、模型推荐理由、模型审核、自动审核放行及运营分析模型调用均关闭。仅在本机显式启用聊天；日额度是每用户 2 元的估算软限制，预算查询失败阻断调用，不能当作账单硬封顶。真实模型效果未由 CI 验证，当前本地验证范围见 [更新说明](docs/updates/20261017.md)。
+按 [示例配置](.env.example) 与 Compose 运行时，收费聊天、全部模型工具、模型推荐理由、模型审核、自动审核放行及运营分析模型调用均关闭。仅在本机显式启用聊天；日额度是每用户 2 元的估算软限制，预算查询失败阻断调用，不能当作账单硬封顶。真实模型效果未由 CI 验证，最新验证范围见 [发布与 CI 记录](docs/updates/20261018.md)。
 
 [RAG 校验](src/main/java/com/bitforum/ai/rag/RagService.java) · [工具白名单](src/main/java/com/bitforum/ai/tool/ToolRegistry.java) · [推荐融合](src/main/java/com/bitforum/ai/recommend/RecommendFusionService.java)
 
 ## 工程质量
 
-以下为已发布 V24 的历史 CI 结果。当前候选单独执行的检查见 [更新说明](docs/updates/20261017.md)，不将旧 CI 结果当作新版本通过。
+当前 V25 / AI 产品更新已完成新一轮 GitHub CI，具体提交、测试数量和边界见 [发布与 CI 记录](docs/updates/20261018.md)。下表保留 V24 的历史结果，不与本轮结果混算。
 
 V24 发布提交 [`62d4bbb`](https://github.com/JJJJIU9999/BitForum/commit/62d4bbb97e8182823db6963ea427d1af549f9f5f) 的 [GitHub Actions 运行](https://github.com/JJJJIU9999/BitForum/actions/runs/38124122274) 中，`backend-unit`、`backend-integration`、`frontend` 三个 Job 均成功。顶部 Badge 显示 `main` 的动态 CI 状态。
 
@@ -111,7 +111,7 @@ V24 发布提交 [`62d4bbb`](https://github.com/JJJJIU9999/BitForum/commit/62d4b
 | 前端测试 | **127 项通过**，覆盖 18 个测试文件 |
 | 前端构建 | **Vite 构建成功** |
 | 收费模型测试 | **13 项按策略跳过**，未计入通过数量 |
-| 数据库迁移 | 历史 V24 为 **V1–V24**；当前候选新增 V25，完整服务回归待新 CI |
+| 数据库迁移 | 历史 V24 为 **V1–V24**；当前实现新增 V25，本轮结果见发布记录 |
 
 测试清单检查防止分类漂移；完整服务集合采用隔离实例，并在连接前校验目标。前端测试基于 Vitest / Testing Library / jsdom，上述结果不包含完整浏览器、跨设备或应用部署验收。详情见 [测试与 CI](docs/testing.md)；[独立验证记录](docs/test-results.md) 保留发布前执行范围。
 
@@ -154,4 +154,4 @@ npm run build
 
 项目面向单机学习与毕业设计演示，尚无生产性能、用户规模或线上部署验证。Redis 指标为定时同步，图片使用本地存储，JWT 保存在前端 localStorage；多数表关系由服务端维护。源码迁移版本不代表已有数据库已升级，更多开放项见 [技术边界](docs/limitations.md)。
 
-BitForum V24 已发布到 GitHub；当前分支为其后的 V25 / AI 更新候选，尚未推送。本仓库从独立公开快照开始，后续产品开发与公开维护统一以 `JJJJIU9999/BitForum` 为目标；不导入旧开发仓库整段历史。仓库分工与后续操作见 [仓库入口](docs/repository-layout.md)。
+本仓库从 BitForum V24 的独立公开快照开始；V25 / AI 产品更新通过 [PR #1](https://github.com/JJJJIU9999/BitForum/pull/1) 维护，发布状态见该 PR。后续产品开发与公开维护统一以 `JJJJIU9999/BitForum` 为目标，不导入旧开发仓库整段历史。仓库分工与后续操作见 [仓库入口](docs/repository-layout.md)。

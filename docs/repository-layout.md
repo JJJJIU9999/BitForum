@@ -2,7 +2,7 @@
 
 ## 唯一正式目标
 
-产品源码及后续对外维护统一面向 **[JJJJIU9999/BitForum](https://github.com/JJJJIU9999/BitForum)**。`main`保存已发布版本，更新先在分支完成审查与验证，再发布；本次本地候选为`sync/local-accepted-20261017`，尚未推送。
+产品源码及后续对外维护统一面向 **[JJJJIU9999/BitForum](https://github.com/JJJJIU9999/BitForum)**。`main`保存已发布版本，更新先在分支完成审查与验证，再发布；本次更新分支为`sync/local-accepted-20261017`，已发布到[PR #1](https://github.com/JJJJIU9999/BitForum/pull/1)，合并状态以该PR为准。
 
 | 本地目录 | 用途 |
 |---|---|
